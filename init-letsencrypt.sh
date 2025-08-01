@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(treinamento.mapa.inovacao.es.gov.br mapa-hm.inovacao.es.gov.br)
+domains=(mapa.inovacao.es.gov.br)
 rsa_key_size=4096
 data_path="./docker-data/certbot"
 email="salimsuhet@gmail.com" # Adding a valid address is strongly recommended
