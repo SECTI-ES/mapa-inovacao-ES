@@ -8,19 +8,16 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./docker/php.ini:/usr/local/etc/php/php.ini
-      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
-
       - ../docker-data/assets:/var/www/html/assets
       - ../docker-data/public-files:/var/www/html/files
       - ../docker-data/private-files:/var/www/private-files
       - ../docker-data/logs:/var/www/var/logs
-      
-      - ../docker/local/config.d:/var/www/config/config.d
+
+      - ./config.d:/var/www/config/config.d
 
       - ../themes/MapaInovacaoES:/var/www/src/themes/MapaInovacaoES
-      - ../docker/dev/start.sh:/var/www/dev/start.sh
-      
+      - ./docker/start.sh:/var/www/dev/start.sh
+
     environment:
       - PENDING_PCACHE_RECREATION_INTERVAL=5
       - JOBS_INTERVAL=5
@@ -29,7 +26,7 @@ services:
       - REDIS_CACHE=redis
       - MAILER_TRANSPORT=smtp://mailhog:1025
       - MAILER_FROM=sysadmin@localhost
-      
+
       # chaves de teste do google recaptcha
       - GOOGLE_RECAPTCHA_SITEKEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
       - GOOGLE_RECAPTCHA_SECRET=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
@@ -37,11 +34,11 @@ services:
       - mailhog
       - db
       - redis
-  
+
     stdin_open: true
     tty: true
 
-  mailhog: 
+  mailhog:
     container_name: mailhog-mapas
     image: mailhog/mailhog
     ports:
@@ -50,7 +47,7 @@ services:
   redis:
     container_name: redis-mapas
     image: redis:6
-    command: --maxmemory 256Mb --maxmemory-policy allkeys-lru  
+    command: --maxmemory 256Mb --maxmemory-policy allkeys-lru
 
   db:
     container_name: db-mapas

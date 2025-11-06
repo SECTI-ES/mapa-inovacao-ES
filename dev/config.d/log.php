@@ -29,7 +29,7 @@ return [
 
     /*
      Pasta onde serão salvos os arquivos de log
-     
+
      o padrão é ~/var/logs, onde ~ é a raíz do projeto, no docker é /var/www
      */
     'monolog.logsDir'          => env('LOG_DIR', VAR_PATH . 'logs/'),
@@ -46,7 +46,7 @@ return [
 
     'app.log.components'          => env('LOG_COMPONENTS', false),
     'app.log.assetManager'        => env('LOG_ASSETMANAGER', false),
-    
+
     'app.log.jobs'          => env('LOG_JOBS', false),
     'app.log.pcache'        => env('LOG_PCACHE', false),
     'app.log.pcache.users'  => env('LOG_PCACHE_USERS', false),

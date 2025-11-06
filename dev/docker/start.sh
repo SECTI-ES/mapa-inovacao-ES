@@ -3,7 +3,7 @@
 chown -R www-data:www-data /var/www/public/*
 
 cd /var/www/src
-pnpm install --recursive 
+pnpm install --recursive
 pnpm run dev
 cd ../../..
 

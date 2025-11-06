@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.2 (Debian 11.2-1.pgdg90+1)
--- Dumped by pg_dump version 11.2 (Debian 11.2-1.pgdg90+1)
+-- Dumped from database version 14.8 (Debian 14.8-1.pgdg110+1)
+-- Dumped by pg_dump version 14.8 (Debian 14.8-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,6 +12,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -50,70 +51,70 @@ COMMENT ON SCHEMA topology IS 'PostGIS Topology schema';
 
 
 --
--- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: 
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
 
 
 --
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
 
 
 --
--- Name: postgis_tiger_geocoder; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis_tiger_geocoder; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder WITH SCHEMA tiger;
 
 
 --
--- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis_tiger_geocoder IS 'PostGIS tiger geocoder and reverse geocoder';
 
 
 --
--- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: 
+-- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
 
 
 --
--- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
 
 
 --
--- Name: unaccent; Type: EXTENSION; Schema: -; Owner: 
+-- Name: unaccent; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION unaccent IS 'text search dictionary that removes accents';
@@ -135,17 +136,22 @@ ALTER DOMAIN public.frequency OWNER TO mapas;
 
 CREATE TYPE public.object_type AS ENUM (
     'MapasCulturais\Entities\Agent',
+    'MapasCulturais\Entities\ChatMessage',
+    'MapasCulturais\Entities\ChatThread',
     'MapasCulturais\Entities\EvaluationMethodConfiguration',
     'MapasCulturais\Entities\Event',
     'MapasCulturais\Entities\Notification',
     'MapasCulturais\Entities\Opportunity',
     'MapasCulturais\Entities\Project',
     'MapasCulturais\Entities\Registration',
+    'MapasCulturais\Entities\RegistrationEvaluation',
     'MapasCulturais\Entities\RegistrationFileConfiguration',
     'MapasCulturais\Entities\Request',
     'MapasCulturais\Entities\Seal',
     'MapasCulturais\Entities\Space',
-    'MapasCulturais\Entities\Subsite'
+    'MapasCulturais\Entities\Subsite',
+    'MapasCulturais\Entities\User',
+    'UserManagement\Entities\SystemRole'
 );
 
 
@@ -173,6 +179,7 @@ CREATE TYPE public.permission_action AS ENUM (
     'modify',
     'modifyRegistrationFields',
     'modifyValuers',
+    'post',
     'publish',
     'publishRegistrations',
     'register',
@@ -193,11 +200,24 @@ CREATE TYPE public.permission_action AS ENUM (
     'viewPrivateData',
     'viewPrivateFiles',
     'viewRegistrations',
-    'viewUserEvaluation'
+    'viewUserEvaluation',
+    'changeType',
+    'changeUserProfile',
+    'deleteAccount',
+    'evaluateOnTime',
+    'unarchive',
+    'changePassword'
 );
 
 
 ALTER TYPE public.permission_action OWNER TO mapas;
+
+--
+-- Name: CAST (point AS text); Type: CAST; Schema: -; Owner: -
+--
+
+-- CREATE CAST (point AS text) WITH FUNCTION pg_catalog.text(point) AS IMPLICIT;
+
 
 --
 -- Name: days_in_month(date); Type: FUNCTION; Schema: public; Owner: mapas
@@ -205,7 +225,6 @@ ALTER TYPE public.permission_action OWNER TO mapas;
 
 CREATE FUNCTION public.days_in_month(check_date date) RETURNS integer
     LANGUAGE plpgsql IMMUTABLE
-
     AS $$
 DECLARE
   first_of_month DATE := check_date - ((extract(day from check_date) - 1)||' days')::interval;
@@ -218,12 +237,46 @@ $$;
 ALTER FUNCTION public.days_in_month(check_date date) OWNER TO mapas;
 
 --
+-- Name: fn_clean_orphans(); Type: FUNCTION; Schema: public; Owner: mapas
+--
+
+CREATE FUNCTION public.fn_clean_orphans() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+                        DECLARE _p_type VARCHAR;
+                    BEGIN
+                        _p_type=TG_ARGV[0];
+                        DELETE FROM agent_relation WHERE
+                            object_type::varchar=_p_type AND object_id=OLD.id;
+                        DELETE FROM seal_relation WHERE
+                            object_type=_p_type AND object_id=OLD.id;
+                        DELETE FROM space_relation WHERE
+                            object_type=_p_type AND object_id=OLD.id;
+                        DELETE FROM term_relation WHERE
+                            object_type::varchar=_p_type AND object_id=OLD.id;
+                        DELETE FROM metalist WHERE
+                            object_type=_p_type AND object_id=OLD.id;
+                        DELETE FROM file WHERE
+                            object_type::varchar=_p_type AND object_id=OLD.id;
+                        DELETE FROM chat_thread WHERE
+                            object_type=_p_type AND object_id=OLD.id;
+                        DELETE FROM pcache WHERE
+                            object_type::varchar=_p_type AND object_id=OLD.id;
+                        DELETE FROM request WHERE
+                            (origin_type=_p_type AND origin_id=OLD.id) OR
+                            (destination_type=_p_type AND destination_id=OLD.id);
+                        RETURN NULL;
+                    END; $$;
+
+
+ALTER FUNCTION public.fn_clean_orphans() OWNER TO mapas;
+
+--
 -- Name: generate_recurrences(interval, date, date, date, date, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: mapas
 --
 
 CREATE FUNCTION public.generate_recurrences(duration interval, original_start_date date, original_end_date date, range_start date, range_end date, repeat_month integer, repeat_week integer, repeat_day integer) RETURNS SETOF date
     LANGUAGE plpgsql IMMUTABLE
-
     AS $$
 DECLARE
   start_date DATE := original_start_date;
@@ -355,7 +408,6 @@ CREATE FUNCTION public.pseudo_random_id_generator() RETURNS integer
                     END LOOP;
                     RETURN ((r1 << 16) + l1);
                 END;
-
             $$;
 
 
@@ -387,7 +439,6 @@ CREATE FUNCTION public.random_id_generator(table_name character varying, initial
               END LOOP;
               RETURN rand_int;
             END;
-
             $$;
 
 
@@ -395,7 +446,7 @@ ALTER FUNCTION public.random_id_generator(table_name character varying, initial_
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: event_occurrence; Type: TABLE; Schema: public; Owner: mapas
@@ -416,6 +467,9 @@ CREATE TABLE public.event_occurrence (
     until date,
     timezone_name text DEFAULT 'Etc/UTC'::text NOT NULL,
     status integer DEFAULT 1 NOT NULL,
+    description text,
+    price text,
+    priceinfo text,
     CONSTRAINT positive_separation CHECK ((separation > 0))
 );
 
@@ -467,7 +521,6 @@ BEGIN
   END LOOP;
   RETURN;
 END;
-
 $$;
 
 
@@ -597,7 +650,6 @@ CREATE FUNCTION public.recurring_event_occurrence_for(range_start timestamp with
               END LOOP;
               RETURN;
             END;
-
             $$;
 
 
@@ -804,7 +856,8 @@ CREATE TABLE public.agent_relation (
     type character varying(64),
     has_control boolean DEFAULT false NOT NULL,
     create_timestamp timestamp without time zone,
-    status smallint
+    status smallint,
+    metadata json
 );
 
 
@@ -830,6 +883,76 @@ ALTER TABLE public.agent_relation_id_seq OWNER TO mapas;
 
 ALTER SEQUENCE public.agent_relation_id_seq OWNED BY public.agent_relation.id;
 
+
+--
+-- Name: chat_message; Type: TABLE; Schema: public; Owner: mapas
+--
+
+CREATE TABLE public.chat_message (
+    id integer NOT NULL,
+    chat_thread_id integer NOT NULL,
+    parent_id integer,
+    user_id integer NOT NULL,
+    payload text NOT NULL,
+    create_timestamp timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.chat_message OWNER TO mapas;
+
+--
+-- Name: chat_message_id_seq; Type: SEQUENCE; Schema: public; Owner: mapas
+--
+
+CREATE SEQUENCE public.chat_message_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.chat_message_id_seq OWNER TO mapas;
+
+--
+-- Name: chat_thread; Type: TABLE; Schema: public; Owner: mapas
+--
+
+CREATE TABLE public.chat_thread (
+    id integer NOT NULL,
+    object_id integer NOT NULL,
+    object_type character varying(255) NOT NULL,
+    type character varying(255) NOT NULL,
+    identifier character varying(255) NOT NULL,
+    description text,
+    create_timestamp timestamp(0) without time zone NOT NULL,
+    last_message_timestamp timestamp(0) without time zone DEFAULT NULL::timestamp without time zone,
+    status integer NOT NULL
+);
+
+
+ALTER TABLE public.chat_thread OWNER TO mapas;
+
+--
+-- Name: COLUMN chat_thread.object_type; Type: COMMENT; Schema: public; Owner: mapas
+--
+
+COMMENT ON COLUMN public.chat_thread.object_type IS '(DC2Type:object_type)';
+
+
+--
+-- Name: chat_thread_id_seq; Type: SEQUENCE; Schema: public; Owner: mapas
+--
+
+CREATE SEQUENCE public.chat_thread_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.chat_thread_id_seq OWNER TO mapas;
 
 --
 -- Name: db_update; Type: TABLE; Schema: public; Owner: mapas
@@ -907,7 +1030,10 @@ ALTER TABLE public.entity_revision_revision_data OWNER TO mapas;
 CREATE TABLE public.evaluation_method_configuration (
     id integer NOT NULL,
     opportunity_id integer NOT NULL,
-    type character varying(255) NOT NULL
+    type character varying(255) NOT NULL,
+    evaluation_from timestamp without time zone,
+    evaluation_to timestamp without time zone,
+    name character varying(255) DEFAULT NULL::character varying
 );
 
 
@@ -1025,7 +1151,9 @@ CREATE TABLE public.registration_evaluation (
     user_id integer NOT NULL,
     result character varying(255) DEFAULT NULL::character varying,
     evaluation_data text NOT NULL,
-    status smallint
+    status smallint,
+    create_timestamp timestamp without time zone DEFAULT now() NOT NULL,
+    update_timestamp timestamp without time zone
 );
 
 
@@ -1076,6 +1204,7 @@ COMMENT ON COLUMN public.usr.auth_provider IS '1=openid';
 
 CREATE VIEW public.evaluations AS
  SELECT evaluations_view.registration_id,
+    evaluations_view.registration_sent_timestamp,
     evaluations_view.registration_number,
     evaluations_view.registration_category,
     evaluations_view.registration_agent_id,
@@ -1086,6 +1215,7 @@ CREATE VIEW public.evaluations AS
     max((evaluations_view.evaluation_result)::text) AS evaluation_result,
     max(evaluations_view.evaluation_status) AS evaluation_status
    FROM ( SELECT r.id AS registration_id,
+            r.sent_timestamp AS registration_sent_timestamp,
             r.number AS registration_number,
             r.category AS registration_category,
             r.agent_id AS registration_agent_id,
@@ -1101,6 +1231,7 @@ CREATE VIEW public.evaluations AS
           WHERE (r.status > 0)
         UNION
          SELECT r2.id AS registration_id,
+            r2.sent_timestamp AS registration_sent_timestamp,
             r2.number AS registration_number,
             r2.category AS registration_category,
             r2.agent_id AS registration_agent_id,
@@ -1110,15 +1241,12 @@ CREATE VIEW public.evaluations AS
             NULL::integer AS evaluation_id,
             NULL::character varying AS evaluation_result,
             NULL::smallint AS evaluation_status
-           FROM ((public.registration r2
-             JOIN public.pcache p2 ON ((r2.id = p2.object_id)))
+           FROM (((public.registration r2
+             JOIN public.pcache p2 ON (((p2.object_id = r2.id) AND (p2.object_type = 'MapasCulturais\Entities\Registration'::public.object_type) AND (p2.action = 'evaluateOnTime'::public.permission_action))))
              JOIN public.usr u2 ON ((u2.id = p2.user_id)))
-          WHERE ((p2.object_type = 'MapasCulturais\Entities\Registration'::public.object_type) AND (p2.action = 'evaluate'::public.permission_action) AND (r2.status > 0) AND (p2.user_id IN ( SELECT agent.user_id
-                   FROM public.agent
-                  WHERE (agent.id IN ( SELECT agent_relation.agent_id
-                           FROM public.agent_relation
-                          WHERE ((agent_relation.object_type = 'MapasCulturais\Entities\EvaluationMethodConfiguration'::public.object_type) AND (agent_relation.object_id = r2.opportunity_id)))))))) evaluations_view
-  GROUP BY evaluations_view.registration_id, evaluations_view.registration_number, evaluations_view.registration_category, evaluations_view.registration_agent_id, evaluations_view.valuer_user_id, evaluations_view.valuer_agent_id, evaluations_view.opportunity_id;
+             JOIN public.evaluation_method_configuration emc ON ((emc.opportunity_id = r2.opportunity_id)))
+          WHERE (r2.status > 0)) evaluations_view
+  GROUP BY evaluations_view.registration_id, evaluations_view.registration_sent_timestamp, evaluations_view.registration_number, evaluations_view.registration_category, evaluations_view.registration_agent_id, evaluations_view.valuer_user_id, evaluations_view.valuer_agent_id, evaluations_view.opportunity_id;
 
 
 ALTER TABLE public.evaluations OWNER TO mapas;
@@ -1354,7 +1482,7 @@ CREATE TABLE public.file (
     object_id integer NOT NULL,
     create_timestamp timestamp without time zone DEFAULT now() NOT NULL,
     grp character varying(32) NOT NULL,
-    description character varying(255),
+    description text,
     parent_id integer,
     path character varying(1024) DEFAULT NULL::character varying,
     private boolean DEFAULT false NOT NULL
@@ -1397,6 +1525,33 @@ CREATE TABLE public.geo_division (
 ALTER TABLE public.geo_division OWNER TO mapas;
 
 --
+-- Name: job; Type: TABLE; Schema: public; Owner: mapas
+--
+
+CREATE TABLE public.job (
+    id character varying(255) NOT NULL,
+    name character varying(32) NOT NULL,
+    iterations integer NOT NULL,
+    iterations_count integer NOT NULL,
+    interval_string character varying(255) NOT NULL,
+    create_timestamp timestamp(0) without time zone NOT NULL,
+    next_execution_timestamp timestamp(0) without time zone NOT NULL,
+    last_execution_timestamp timestamp(0) without time zone DEFAULT NULL::timestamp without time zone,
+    metadata json NOT NULL,
+    status smallint NOT NULL
+);
+
+
+ALTER TABLE public.job OWNER TO mapas;
+
+--
+-- Name: COLUMN job.metadata; Type: COMMENT; Schema: public; Owner: mapas
+--
+
+COMMENT ON COLUMN public.job.metadata IS '(DC2Type:json)';
+
+
+--
 -- Name: metadata; Type: TABLE; Schema: public; Owner: mapas
 --
 
@@ -1435,7 +1590,7 @@ CREATE TABLE public.metalist (
     grp character varying(32) NOT NULL,
     title character varying(255) NOT NULL,
     description text,
-    value character varying(2048) NOT NULL,
+    value text NOT NULL,
     create_timestamp timestamp without time zone DEFAULT now() NOT NULL,
     "order" smallint
 );
@@ -1552,7 +1707,10 @@ CREATE TABLE public.opportunity (
     status smallint NOT NULL,
     subsite_id integer,
     object_type character varying(255) NOT NULL,
-    object_id integer NOT NULL
+    object_id integer NOT NULL,
+    avaliable_evaluation_fields json,
+    publish_timestamp timestamp without time zone,
+    auto_publish boolean DEFAULT false NOT NULL
 );
 
 
@@ -1645,8 +1803,8 @@ CREATE TABLE public.project (
     is_verified boolean DEFAULT false NOT NULL,
     type smallint NOT NULL,
     parent_id integer,
-    registration_from timestamp without time zone,
-    registration_to timestamp without time zone,
+    starts_on timestamp without time zone,
+    ends_on timestamp without time zone,
     update_timestamp timestamp(0) without time zone,
     subsite_id integer
 );
@@ -1789,7 +1947,10 @@ CREATE TABLE public.registration_field_configuration (
     field_options text NOT NULL,
     max_size text,
     display_order smallint DEFAULT 255,
-    config text
+    config text,
+    conditional boolean,
+    conditional_field character varying(255),
+    conditional_value character varying(255)
 );
 
 
@@ -1827,7 +1988,10 @@ CREATE TABLE public.registration_file_configuration (
     description text,
     required boolean NOT NULL,
     categories text,
-    display_order smallint DEFAULT 255
+    display_order smallint DEFAULT 255,
+    conditional boolean,
+    conditional_field character varying(255),
+    conditional_value character varying(255)
 );
 
 
@@ -2010,7 +2174,8 @@ CREATE TABLE public.seal (
     status smallint NOT NULL,
     certificate_text text,
     update_timestamp timestamp(0) without time zone,
-    subsite_id integer
+    subsite_id integer,
+    locked_fields json DEFAULT '[]'::json
 );
 
 
@@ -2270,6 +2435,45 @@ CREATE SEQUENCE public.subsite_meta_id_seq
 
 
 ALTER TABLE public.subsite_meta_id_seq OWNER TO mapas;
+
+--
+-- Name: system_role; Type: TABLE; Schema: public; Owner: mapas
+--
+
+CREATE TABLE public.system_role (
+    id integer NOT NULL,
+    slug character varying(64) NOT NULL,
+    name character varying(255) NOT NULL,
+    subsite_context boolean NOT NULL,
+    permissions json,
+    create_timestamp timestamp(0) without time zone NOT NULL,
+    update_timestamp timestamp(0) without time zone DEFAULT NULL::timestamp without time zone,
+    status smallint NOT NULL
+);
+
+
+ALTER TABLE public.system_role OWNER TO mapas;
+
+--
+-- Name: COLUMN system_role.permissions; Type: COMMENT; Schema: public; Owner: mapas
+--
+
+COMMENT ON COLUMN public.system_role.permissions IS '(DC2Type:json)';
+
+
+--
+-- Name: system_role_id_seq; Type: SEQUENCE; Schema: public; Owner: mapas
+--
+
+CREATE SEQUENCE public.system_role_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.system_role_id_seq OWNER TO mapas;
 
 --
 -- Name: term; Type: TABLE; Schema: public; Owner: mapas
@@ -2536,7 +2740,23 @@ COPY public.agent_meta (object_id, key, value, id) FROM stdin;
 -- Data for Name: agent_relation; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.agent_relation (id, agent_id, object_type, object_id, type, has_control, create_timestamp, status) FROM stdin;
+COPY public.agent_relation (id, agent_id, object_type, object_id, type, has_control, create_timestamp, status, metadata) FROM stdin;
+\.
+
+
+--
+-- Data for Name: chat_message; Type: TABLE DATA; Schema: public; Owner: mapas
+--
+
+COPY public.chat_message (id, chat_thread_id, parent_id, user_id, payload, create_timestamp) FROM stdin;
+\.
+
+
+--
+-- Data for Name: chat_thread; Type: TABLE DATA; Schema: public; Owner: mapas
+--
+
+COPY public.chat_thread (id, object_id, object_type, type, identifier, description, create_timestamp, last_message_timestamp, status) FROM stdin;
 \.
 
 
@@ -2613,19 +2833,66 @@ create entities updated revision	2019-03-07 23:54:19.362878
 fix update timestamp of revisioned entities	2019-03-07 23:54:19.367904
 consolidate registration result	2019-03-07 23:54:19.3728
 create avatar thumbs	2019-03-07 23:55:16.963658
-CREATE SEQUENCE REGISTRATION SPACE RELATION registration_space_relation_id_seq	2021-02-04 13:50:37.698794
-CREATE TABLE spacerelation	2021-02-04 13:50:37.698794
-ALTER TABLE registration	2021-02-04 13:50:37.698794
-create event attendance table	2021-02-04 13:50:37.698794
-create procuration table	2021-02-04 13:50:37.698794
-alter table registration_field_configuration add column config	2021-02-04 13:50:37.698794
-recreate ALL FKs	2021-02-04 13:50:37.698794
-create object_type enum type	2021-02-04 13:50:37.698794
-create permission_action enum type	2021-02-04 13:50:37.698794
-alter tables to use enum types	2021-02-04 13:50:37.698794
-alter table permission_cache_pending add column status	2021-02-04 13:50:37.698794
-CREATE VIEW evaluation	2021-02-04 13:50:37.698794
-valuer disabling refactor	2021-02-04 13:50:37.698794
+CREATE SEQUENCE REGISTRATION SPACE RELATION registration_space_relation_id_seq	2022-12-28 15:18:39.104279
+CREATE TABLE spacerelation	2022-12-28 15:18:39.104279
+ALTER TABLE registration	2022-12-28 15:18:39.104279
+create event attendance table	2022-12-28 15:18:39.104279
+create procuration table	2022-12-28 15:18:39.104279
+alter table registration_field_configuration add column config	2022-12-28 15:18:39.104279
+recreate ALL FKs	2022-12-28 15:18:39.104279
+create object_type enum type	2022-12-28 15:18:39.104279
+create permission_action enum type	2022-12-28 15:18:39.104279
+alter tables to use enum types	2022-12-28 15:18:39.104279
+alter table permission_cache_pending add column status	2022-12-28 15:18:39.104279
+RECREATE VIEW evaluations AGAIN!	2022-12-28 15:18:39.104279
+valuer disabling refactor	2022-12-28 15:18:39.104279
+ALTER TABLE metalist ALTER value TYPE TEXT	2022-12-28 15:18:39.104279
+Add metadata to Agent Relation	2022-12-28 15:18:39.104279
+add timestamp columns to registration_evaluation	2022-12-28 15:18:39.104279
+create chat tables	2022-12-28 15:18:39.104279
+create table job	2022-12-28 15:18:39.104279
+clean existing orphans	2022-12-28 15:18:39.104279
+add triggers for orphan cleanup	2022-12-28 15:18:39.104279
+Remove lixo angular registration_meta	2022-12-28 15:18:39.104279
+Adiciona coluna avaliableEvaluationFields na tabela opportunity	2022-12-28 15:18:39.104279
+Consede permissão em todos os campo para todos os avaliadores da oportunidade	2022-12-28 15:18:39.104279
+alter seal add column locked_fields	2022-12-28 15:18:39.104279
+update taxonomy slug funcao	2022-12-28 15:18:39.104279
+create registrations history entries	2022-12-28 15:18:39.949624
+create evaluations history entries	2022-12-28 15:18:39.960974
+corrige registration_metadada dos campos @	2022-12-28 15:18:39.963793
+remove orphan events again	2023-09-16 18:51:34.531169
+fix subsite verifiedSeals array	2023-09-16 18:51:34.531169
+RECREATE VIEW evaluations AGAIN!!!!!	2023-09-16 18:51:34.531169
+adiciona oportunidades na fila de reprocessamento de cache	2023-09-16 18:51:34.531169
+adiciona novos indices a tabela agent_relation	2023-09-16 18:51:34.531169
+alter job.metadata comment	2023-09-16 18:51:34.531169
+Adiciona coluna publish_timestamp na tabela opportunity	2023-09-16 18:51:34.531169
+Adiciona coluna auto_publish na tabela opportunity	2023-09-16 18:51:34.531169
+Adiciona coluna evaluation_from e evaluation_to na tabela evaluation_method_configuration	2023-09-16 18:51:34.531169
+adiciona coluna name na tabela evaluation_method_configuration	2023-09-16 18:51:34.531169
+popula as colunas name, evaluation_from e evaluation_to da tabela evaluation_method_configuration	2023-09-16 18:51:34.531169
+Renomeia colunas registrationFrom e registrationTo da tabela de projetod	2023-09-16 18:51:34.531169
+Adiciona novas coluna na tabela registration_field_configuration	2023-09-16 18:51:34.531169
+Adiciona novas coluna na tabela registration_file_configuration	2023-09-16 18:51:34.531169
+corrige metadados criados por erro em inscricoes de fases	2023-09-16 18:51:34.531169
+Adiciona a coluna description para a descrição da ocorrência	2023-09-16 18:51:34.531169
+Adiciona a coluna price para a o valor de entrada da ocorrência	2023-09-16 18:51:34.531169
+Adiciona a coluna priceInfo para a informações sobre o valor de entrada da ocorrência	2023-09-16 18:51:34.531169
+Apaga registro do db-update de "Definição dos cammpos cpf e cnpj com base no documento" para que rode novamente	2023-09-16 18:51:34.531169
+Corrige config dos campos na entidade registration_fields_configurarion	2023-09-16 18:51:34.531169
+seta como vazio campo escolaridade do agent caso esteja com valor não informado	2023-09-16 18:51:34.531169
+altera tipo da coluna description na tabela file	2023-09-16 18:51:34.531169
+faz com que o updateTimestamp seja igual ao createTimestamp na criacão da entidade	2023-09-16 18:51:34.531169
+migra valores das colunas do tipo array para do tipo json	2023-09-16 18:51:34.531169
+define metadado isDataCollection = 0 nas fases sem campos configurados	2023-09-16 18:51:34.531169
+create table system_role	2023-09-16 18:51:34.531169
+alter system_role.permissions comment	2023-09-16 18:51:34.531169
+Definição dos cammpos cpf e cnpj com base no documento	2023-09-16 18:51:35.638149
+Atualiza os campos das ocorrencias para o novo padrao	2023-09-16 18:51:35.644497
+create permission cache for users	2023-09-16 18:51:35.648676
+Atualiza campos condicionados para funcionar na nova estrutura	2023-09-16 18:51:35.653105
+criando fases de resultado final para as oportunidades existentes sem fase final	2023-09-16 18:51:35.657056
 \.
 
 
@@ -2678,7 +2945,7 @@ COPY public.entity_revision_revision_data (revision_id, revision_data_id) FROM s
 -- Data for Name: evaluation_method_configuration; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.evaluation_method_configuration (id, opportunity_id, type) FROM stdin;
+COPY public.evaluation_method_configuration (id, opportunity_id, type, evaluation_from, evaluation_to, name) FROM stdin;
 \.
 
 
@@ -2718,7 +2985,7 @@ COPY public.event_meta (key, object_id, value, id) FROM stdin;
 -- Data for Name: event_occurrence; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.event_occurrence (id, space_id, event_id, rule, starts_on, ends_on, starts_at, ends_at, frequency, separation, count, until, timezone_name, status) FROM stdin;
+COPY public.event_occurrence (id, space_id, event_id, rule, starts_on, ends_on, starts_at, ends_at, frequency, separation, count, until, timezone_name, status, description, price, priceinfo) FROM stdin;
 \.
 
 
@@ -2751,6 +3018,14 @@ COPY public.file (id, md5, mime_type, name, object_type, object_id, create_times
 --
 
 COPY public.geo_division (id, parent_id, type, cod, name, geom) FROM stdin;
+\.
+
+
+--
+-- Data for Name: job; Type: TABLE DATA; Schema: public; Owner: mapas
+--
+
+COPY public.job (id, name, iterations, iterations_count, interval_string, create_timestamp, next_execution_timestamp, last_execution_timestamp, metadata, status) FROM stdin;
 \.
 
 
@@ -2790,7 +3065,7 @@ COPY public.notification_meta (id, object_id, key, value) FROM stdin;
 -- Data for Name: opportunity; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.opportunity (id, parent_id, agent_id, type, name, short_description, long_description, registration_from, registration_to, published_registrations, registration_categories, create_timestamp, update_timestamp, status, subsite_id, object_type, object_id) FROM stdin;
+COPY public.opportunity (id, parent_id, agent_id, type, name, short_description, long_description, registration_from, registration_to, published_registrations, registration_categories, create_timestamp, update_timestamp, status, subsite_id, object_type, object_id, avaliable_evaluation_fields, publish_timestamp, auto_publish) FROM stdin;
 \.
 
 
@@ -2830,7 +3105,7 @@ COPY public.procuration (token, usr_id, attorney_user_id, action, create_timesta
 -- Data for Name: project; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.project (id, name, short_description, long_description, create_timestamp, status, agent_id, is_verified, type, parent_id, registration_from, registration_to, update_timestamp, subsite_id) FROM stdin;
+COPY public.project (id, name, short_description, long_description, create_timestamp, status, agent_id, is_verified, type, parent_id, starts_on, ends_on, update_timestamp, subsite_id) FROM stdin;
 \.
 
 
@@ -2862,7 +3137,7 @@ COPY public.registration (id, opportunity_id, category, agent_id, create_timesta
 -- Data for Name: registration_evaluation; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.registration_evaluation (id, registration_id, user_id, result, evaluation_data, status) FROM stdin;
+COPY public.registration_evaluation (id, registration_id, user_id, result, evaluation_data, status, create_timestamp, update_timestamp) FROM stdin;
 \.
 
 
@@ -2870,7 +3145,7 @@ COPY public.registration_evaluation (id, registration_id, user_id, result, evalu
 -- Data for Name: registration_field_configuration; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.registration_field_configuration (id, opportunity_id, title, description, categories, required, field_type, field_options, max_size, display_order, config) FROM stdin;
+COPY public.registration_field_configuration (id, opportunity_id, title, description, categories, required, field_type, field_options, max_size, display_order, config, conditional, conditional_field, conditional_value) FROM stdin;
 \.
 
 
@@ -2878,7 +3153,7 @@ COPY public.registration_field_configuration (id, opportunity_id, title, descrip
 -- Data for Name: registration_file_configuration; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.registration_file_configuration (id, opportunity_id, title, description, required, categories, display_order) FROM stdin;
+COPY public.registration_file_configuration (id, opportunity_id, title, description, required, categories, display_order, conditional, conditional_field, conditional_value) FROM stdin;
 \.
 
 
@@ -2911,8 +3186,8 @@ COPY public.role (id, usr_id, name, subsite_id) FROM stdin;
 -- Data for Name: seal; Type: TABLE DATA; Schema: public; Owner: mapas
 --
 
-COPY public.seal (id, agent_id, name, short_description, long_description, valid_period, create_timestamp, status, certificate_text, update_timestamp, subsite_id) FROM stdin;
-1	1	Selo Mapas	Descrição curta Selo Mapas	Descrição longa Selo Mapas	0	2019-03-07 23:54:04	1	\N	2019-03-07 00:00:00	\N
+COPY public.seal (id, agent_id, name, short_description, long_description, valid_period, create_timestamp, status, certificate_text, update_timestamp, subsite_id, locked_fields) FROM stdin;
+1	1	Selo Mapas	Descrição curta Selo Mapas	Descrição longa Selo Mapas	0	2019-03-07 23:54:04	1	\N	2019-03-07 00:00:00	\N	[]
 \.
 
 
@@ -2977,6 +3252,14 @@ COPY public.subsite (id, name, create_timestamp, status, agent_id, url, namespac
 --
 
 COPY public.subsite_meta (object_id, key, value, id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: system_role; Type: TABLE DATA; Schema: public; Owner: mapas
+--
+
+COPY public.system_role (id, slug, name, subsite_context, permissions, create_timestamp, update_timestamp, status) FROM stdin;
 \.
 
 
@@ -3111,6 +3394,20 @@ SELECT pg_catalog.setval('public.agent_meta_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.agent_relation_id_seq', 1, false);
+
+
+--
+-- Name: chat_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mapas
+--
+
+SELECT pg_catalog.setval('public.chat_message_id_seq', 1, false);
+
+
+--
+-- Name: chat_thread_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mapas
+--
+
+SELECT pg_catalog.setval('public.chat_thread_id_seq', 1, false);
 
 
 --
@@ -3387,6 +3684,13 @@ SELECT pg_catalog.setval('public.subsite_meta_id_seq', 1, false);
 
 
 --
+-- Name: system_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mapas
+--
+
+SELECT pg_catalog.setval('public.system_role_id_seq', 1, false);
+
+
+--
 -- Name: term_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mapas
 --
 
@@ -3412,6 +3716,13 @@ SELECT pg_catalog.setval('public.user_meta_id_seq', 2, true);
 --
 
 SELECT pg_catalog.setval('public.usr_id_seq', 1, true);
+
+
+--
+-- Name: topology_id_seq; Type: SEQUENCE SET; Schema: topology; Owner: mapas
+--
+
+SELECT pg_catalog.setval('topology.topology_id_seq', 1, false);
 
 
 --
@@ -3460,6 +3771,22 @@ ALTER TABLE ONLY public.agent
 
 ALTER TABLE ONLY public.agent_relation
     ADD CONSTRAINT agent_relation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: chat_message chat_message_pkey; Type: CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.chat_message
+    ADD CONSTRAINT chat_message_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: chat_thread chat_thread_pkey; Type: CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.chat_thread
+    ADD CONSTRAINT chat_thread_pkey PRIMARY KEY (id);
 
 
 --
@@ -3572,6 +3899,14 @@ ALTER TABLE ONLY public.file
 
 ALTER TABLE ONLY public.geo_division
     ADD CONSTRAINT geo_divisions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: job job_pkey; Type: CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.job
+    ADD CONSTRAINT job_pkey PRIMARY KEY (id);
 
 
 --
@@ -3791,6 +4126,14 @@ ALTER TABLE ONLY public.subsite_meta
 
 
 --
+-- Name: system_role system_role_pkey; Type: CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.system_role
+    ADD CONSTRAINT system_role_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: term term_pk; Type: CONSTRAINT; Schema: public; Owner: mapas
 --
 
@@ -3852,10 +4195,45 @@ CREATE INDEX agent_meta_owner_key_idx ON public.agent_meta USING btree (object_i
 
 
 --
--- Name: agent_relation_all; Type: INDEX; Schema: public; Owner: mapas
+-- Name: agent_relation_has_control; Type: INDEX; Schema: public; Owner: mapas
 --
 
-CREATE INDEX agent_relation_all ON public.agent_relation USING btree (agent_id, object_type, object_id);
+CREATE INDEX agent_relation_has_control ON public.agent_relation USING btree (has_control);
+
+
+--
+-- Name: agent_relation_owner; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX agent_relation_owner ON public.agent_relation USING btree (object_type, object_id);
+
+
+--
+-- Name: agent_relation_owner_agent; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX agent_relation_owner_agent ON public.agent_relation USING btree (object_type, object_id, agent_id);
+
+
+--
+-- Name: agent_relation_owner_id; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX agent_relation_owner_id ON public.agent_relation USING btree (object_id);
+
+
+--
+-- Name: agent_relation_owner_type; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX agent_relation_owner_type ON public.agent_relation USING btree (object_type);
+
+
+--
+-- Name: agent_relation_status; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX agent_relation_status ON public.agent_relation USING btree (status);
 
 
 --
@@ -4101,6 +4479,41 @@ CREATE INDEX idx_62a8a7a79a34590f ON public.registration USING btree (opportunit
 --
 
 CREATE INDEX idx_62a8a7a7c79c849a ON public.registration USING btree (subsite_id);
+
+
+--
+-- Name: idx_fab3fc16727aca70; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX idx_fab3fc16727aca70 ON public.chat_message USING btree (parent_id);
+
+
+--
+-- Name: idx_fab3fc16a76ed395; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX idx_fab3fc16a76ed395 ON public.chat_message USING btree (user_id);
+
+
+--
+-- Name: idx_fab3fc16c47d5262; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX idx_fab3fc16c47d5262 ON public.chat_message USING btree (chat_thread_id);
+
+
+--
+-- Name: job_next_execution_timestamp_idx; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX job_next_execution_timestamp_idx ON public.job USING btree (next_execution_timestamp);
+
+
+--
+-- Name: job_search_idx; Type: INDEX; Schema: public; Owner: mapas
+--
+
+CREATE INDEX job_search_idx ON public.job USING btree (next_execution_timestamp, iterations_count, status);
 
 
 --
@@ -4367,6 +4780,90 @@ CREATE INDEX user_meta_owner_idx ON public.user_meta USING btree (object_id);
 --
 
 CREATE INDEX user_meta_owner_key_idx ON public.user_meta USING btree (object_id, key);
+
+
+--
+-- Name: agent trigger_clean_orphans_agent; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_agent AFTER DELETE ON public.agent FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Agent');
+
+
+--
+-- Name: chat_message trigger_clean_orphans_chat_message; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_chat_message AFTER DELETE ON public.chat_message FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\ChatMessage');
+
+
+--
+-- Name: chat_thread trigger_clean_orphans_chat_thread; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_chat_thread AFTER DELETE ON public.chat_thread FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\ChatThread');
+
+
+--
+-- Name: evaluation_method_configuration trigger_clean_orphans_evaluation_method_configuration; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_evaluation_method_configuration AFTER DELETE ON public.evaluation_method_configuration FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\EvaluationMethodConfiguration');
+
+
+--
+-- Name: event trigger_clean_orphans_event; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_event AFTER DELETE ON public.event FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Event');
+
+
+--
+-- Name: notification trigger_clean_orphans_notification; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_notification AFTER DELETE ON public.notification FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Notification');
+
+
+--
+-- Name: opportunity trigger_clean_orphans_opportunity; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_opportunity AFTER DELETE ON public.opportunity FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Opportunity');
+
+
+--
+-- Name: project trigger_clean_orphans_project; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_project AFTER DELETE ON public.project FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Project');
+
+
+--
+-- Name: registration trigger_clean_orphans_registration; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_registration AFTER DELETE ON public.registration FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Registration');
+
+
+--
+-- Name: registration_file_configuration trigger_clean_orphans_registration_file_configuration; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_registration_file_configuration AFTER DELETE ON public.registration_file_configuration FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\RegistrationFileConfiguration');
+
+
+--
+-- Name: space trigger_clean_orphans_space; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_space AFTER DELETE ON public.space FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Space');
+
+
+--
+-- Name: subsite trigger_clean_orphans_subsite; Type: TRIGGER; Schema: public; Owner: mapas
+--
+
+CREATE TRIGGER trigger_clean_orphans_subsite AFTER DELETE ON public.subsite FOR EACH ROW EXECUTE FUNCTION public.fn_clean_orphans('MapasCulturais\Entities\Subsite');
 
 
 --
@@ -4895,6 +5392,30 @@ ALTER TABLE ONLY public.term_relation
 
 ALTER TABLE ONLY public.project_meta
     ADD CONSTRAINT fk_ee63dc2d232d562b FOREIGN KEY (object_id) REFERENCES public.project(id) ON DELETE CASCADE;
+
+
+--
+-- Name: chat_message fk_fab3fc16727aca70; Type: FK CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.chat_message
+    ADD CONSTRAINT fk_fab3fc16727aca70 FOREIGN KEY (parent_id) REFERENCES public.chat_message(id) ON DELETE CASCADE;
+
+
+--
+-- Name: chat_message fk_fab3fc16a76ed395; Type: FK CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.chat_message
+    ADD CONSTRAINT fk_fab3fc16a76ed395 FOREIGN KEY (user_id) REFERENCES public.usr(id) ON DELETE CASCADE;
+
+
+--
+-- Name: chat_message fk_fab3fc16c47d5262; Type: FK CONSTRAINT; Schema: public; Owner: mapas
+--
+
+ALTER TABLE ONLY public.chat_message
+    ADD CONSTRAINT fk_fab3fc16c47d5262 FOREIGN KEY (chat_thread_id) REFERENCES public.chat_thread(id) ON DELETE CASCADE;
 
 
 --

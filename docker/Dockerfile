@@ -7,11 +7,11 @@ COPY translations /var/www/src/translations
 
 COPY modules /var/www/src/modules
 
-# WORKDIR /var/www/src
-# RUN pnpm install --recursive && pnpm run build
-# WORKDIR /var/www
-
 COPY docker/common/config.d /var/www/config/common.d
 COPY docker/production/config.d /var/www/config/config.d
 COPY docker/production/composer.json /var/www/composer.json
 COPY docker/common/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
+
+# WORKDIR /var/www/src
+# RUN pnpm install --recursive && pnpm run build
+# WORKDIR /var/www

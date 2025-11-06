@@ -105,8 +105,7 @@ case $OPTIONS in
         clear
 
         docker compose down --rmi 'all'
-        docker volume prune -f
-        docker network prune -f
+        docker system prune -f --volumes
 
         clean_docker_data
 
