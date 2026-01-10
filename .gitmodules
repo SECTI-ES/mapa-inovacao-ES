@@ -29,3 +29,6 @@
 [submodule "plugins/AccountConsolidator"]
 	path = plugins/AccountConsolidator
 	url = https://github.com/mapasculturais/plugin-AccountConsolidator.git
+[submodule "plugins/DownloadAllFiles"]
+	path = plugins/DownloadAllFiles
+	url = https://github.com/SECTI-ES/plugin-DownloadAllFiles.git

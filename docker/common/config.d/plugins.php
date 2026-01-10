@@ -9,6 +9,7 @@ return [
         'SpamDetector',
         'ValuersManagement',
         'AccountConsolidator',
+        'DownloadAllFiles',
 
         'SettingsES' => ['namespace' => 'SettingsES'],
         'Zammad' => [
