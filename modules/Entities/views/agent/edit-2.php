@@ -7,7 +7,8 @@ use MapasCulturais\i;
 $this->layout = 'entity';
 
 $this->import('
-    confirm-before-exit 
+    confirm-before-exit
+    country-address-form
     entity-actions
     entity-admins
     entity-cover
@@ -35,13 +36,13 @@ $this->import('
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Meus Agentes');
     $url = $app->createUrl('panel', 'agents');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Agentes');
     $url = $app->createUrl('search', 'agents');
 }
@@ -71,7 +72,7 @@ $this->breadcrumb = [
                         <div class="left">
                             <div class="grid-12 v-bottom">
                                 <entity-cover :entity="entity" classes="col-12"></entity-cover>
-                                
+
                                 <div class="col-12 grid-12">
                                     <?php $this->applyTemplateHook('entity-info','begin') ?>
                                     <div class="col-3 sm:col-12">
@@ -83,7 +84,7 @@ $this->breadcrumb = [
                                     <?php $this->applyTemplateHook('entity-info','end') ?>
                                 </div>
 
-                                <entity-field :entity="entity" classes="col-12" prop="shortDescription"></entity-field>
+                                <entity-field :entity="entity" classes="col-12" prop="shortDescription" :max-length="400"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="site"></entity-field>
                             </div>
                         </div>
@@ -107,9 +108,11 @@ $this->breadcrumb = [
                         </template>
                         <template #content>
                             <div class="grid-12">
-                                <entity-field :entity="entity" classes="col-9 sm:col-12" prop="name" label="<?php i::_e('Nome fantasia ou razão social') ?>"></entity-field>
+                                <entity-field :entity="entity" classes="col-9 sm:col-12" prop="nomeSocial" label="<?php i::_e('Nome Fantasia') ?>"></entity-field>
+                                <entity-field :entity="entity" classes="col-9 sm:col-12" prop="nomeCompleto" label="<?php i::_e('Razão Social') ?>"></entity-field>
                                 <entity-field v-if="global.auth.is('admin')" :entity="entity" prop="type" @change="entity.save(true).then(() => global.reload())" classes="col-12"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="cnpj" label="CNPJ"></entity-field>
+                                <entity-field :disabled="!(entity?.cnpj?.length == 18)" :entity="entity" classes="col-12" prop="cnpjAnexo" title-modal="<?php i::_e('Anexar CNPJ - Formatos: (png, jpeg, pdf)') ?>" group-name="docs-cnpj" :hide-label="true"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="dataDeNascimento" label="<?= i::__('Data de fundação') ?>"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="emailPrivado" label="<?= i::__('E-mail privado ') ?>"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="telefonePublico" label="<?= i::__('Telefone público com DDD') ?>"></entity-field>
@@ -117,7 +120,7 @@ $this->breadcrumb = [
                                 <entity-field :entity="entity" classes="col-6 sm:col-12" prop="telefone1" label="<?= i::__('Telefone privado 1 com DDD') ?>"></entity-field>
                                 <entity-field :entity="entity" classes="col-6 sm:col-12" prop="telefone2" label="<?= i::__('Telefone privado 2 com DDD') ?>"></entity-field>
                                 <div class="col-12 divider"></div>
-                                <entity-location :entity="entity" classes="col-12" editable></entity-location>
+                                <country-address-form :entity="entity" class="col-12"></country-address-form>
                             </div>
                         </template>
                     </mc-card>
@@ -153,7 +156,7 @@ $this->breadcrumb = [
         </mc-tab>
         <?php $this->applyTemplateHook('tabs','end') ?>
     </mc-tabs>
-    
+
     <entity-actions :entity="entity" editable></entity-actions>
 </div>
 <confirm-before-exit :entity="entity"></confirm-before-exit>

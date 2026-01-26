@@ -9,7 +9,7 @@ $_APP_BASE_URL = $prot_part . $host_part;
 return [
     'auth.provider' => '\MultipleLocalAuth\Provider',
     'auth.config' => array(
-        
+
         'urlSupportEmail' => 'mailto:seedes@secti.es.gov.br',
 
         'salt' => env('AUTH_SALT', null),
@@ -52,7 +52,7 @@ return [
                 'client_id' => env('AUTH_ACESSO_CIDADAO_ES_CLIENT_ID', null),
                 'client_secret' => env('AUTH_ACESSO_CIDADAO_ES_SECRET', null),
                 'scope' => env('AUTH_ACESSO_CIDADAO_ES_SCOPE', null),
-                'redirect_uri' => env('AUTH_ACESSO_CIDADAO_ES_REDIRECT_URI', null), 
+                'redirect_uri' => env('AUTH_ACESSO_CIDADAO_ES_REDIRECT_URI', null),
                 'auth_endpoint' => env('AUTH_ACESSO_CIDADAO_ES_ENDPOINT', null),
                 'token_endpoint' => env('AUTH_ACESSO_CIDADAO_ES_TOKEN_ENDPOINT', null),
                 'nonce' => env('AUTH_ACESSO_CIDADAO_ES_NONCE', null),

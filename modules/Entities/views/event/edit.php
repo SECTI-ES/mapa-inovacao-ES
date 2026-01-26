@@ -38,13 +38,13 @@ $this->import('
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Meus Eventos');
     $url = $app->createUrl('panel', 'events');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Eventos');
     $url = $app->createUrl('search', 'events');
 }
@@ -88,8 +88,8 @@ $this->breadcrumb = [
                                     </div>
                                     <?php $this->applyTemplateHook('entity-info','end') ?>
                                 </div>
-                                
-                                <entity-field :entity="entity" classes="col-12" prop="shortDescription"></entity-field>
+
+                                <entity-field :entity="entity" classes="col-12" prop="shortDescription" :max-length="400"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" label="<?php i::_e("Link para página ou site do evento") ?>" prop="site"></entity-field>
                             </div>
                         </div>
@@ -165,7 +165,7 @@ $this->breadcrumb = [
         </mc-tab>
         <?php $this->applyTemplateHook('tabs','end') ?>
     </mc-tabs>
-    
+
     <entity-actions :entity="entity" editable></entity-actions>
 </div>
 <confirm-before-exit :entity="entity"></confirm-before-exit>

@@ -10,6 +10,7 @@ $this->import('
     complaint-suggestion
     entity-actions
     entity-admins
+    entity-data
     entity-files-list
     entity-gallery
     entity-gallery-video
@@ -23,7 +24,7 @@ $this->import('
     entity-social-media
     entity-terms
     event-info
-    event-age-rating 
+    event-age-rating
     mc-breadcrumb
     mc-container
     mc-share-links
@@ -35,13 +36,13 @@ $this->import('
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Meus Eventos');
     $url = $app->createUrl('panel', 'events');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Eventos');
     $url = $app->createUrl('search', 'events');
 }
@@ -56,14 +57,13 @@ $this->breadcrumb = [
     <entity-header :entity="entity">
         <template #metadata>
             <dl v-if="entity.id && global.showIds[entity.__objectType]" class="metadata__id">
-                <dt class="metadata__id--id"><?= i::__('ID') ?></dt>
-                <dd><strong>{{entity.id}}</strong></dd>
-            </dl> 
-            <dl v-if="entity.subTitle">
-                <dd>{{entity.subTitle}}</dd>
+                <entity-data v-if="entity.longDescription" class="col-12 long-description" :entity="entity" prop="id" label="<?php i::_e('ID')?>"></entity-data>
+            </dl>
+            <dl>
+                <entity-data v-if="entity.subTitle" class="col-12 long-description" :entity="entity" prop="subTitle"></entity-data>
             </dl>
         </template>
-    </entity-header>    
+    </entity-header>
     <mc-tabs class="tabs" sync-hash>
         <mc-tab icon="exclamation" label="<?= i::_e('Informações') ?>" slug="info">
             <div class="tabs__info">
@@ -72,12 +72,9 @@ $this->breadcrumb = [
                         <opportunity-list></opportunity-list>
                         <div class="grid-12">
                             <event-age-rating :event="entity" classes="col-12"></event-age-rating>
-                            <entity-occurrence-list classes="col-12" :entity="entity"></entity-occurrence-list>    
+                            <entity-occurrence-list classes="col-12" :entity="entity"></entity-occurrence-list>
                             <event-info classes="col-12" :entity="entity"></event-info>
-                            <div v-if="entity.longDescription" class="col-12 long-description">
-                                <h3><?php i::_e('Descrição Detalhada');?></h3>
-                                <p class="description"  v-html="entity.longDescription"></p>
-                            </div> 
+                            <entity-data v-if="entity.longDescription" class="col-12 long-description" :entity="entity" prop="longDescription" label="<?php i::_e("Descrição Detalhada")?>"></entity-data>
                             <entity-files-list v-if="entity.files.downloads!= null" :entity="entity"  classes="col-12" group="downloads" title="<?php i::esc_attr_e('Arquivos para download') ?>"></entity-files-list>
                             <entity-links :entity="entity" classes="col-12" title="<?php i::_e('Links'); ?>"></entity-links>
                             <entity-gallery-video :entity="entity" classes="col-12"></entity-gallery-video>
@@ -94,7 +91,7 @@ $this->breadcrumb = [
                             <entity-related-agents :entity="entity" classes="col-12" title="<?php i::esc_attr_e('Agentes Relacionados'); ?>"></entity-related-agents>
                             <mc-share-links classes="col-12" title="<?php i::esc_attr_e('Compartilhar'); ?>" text="<?php i::esc_attr_e('Veja este link:');?>"></mc-share-links>
                             <entity-admins :entity="entity" classes="col-12"></entity-admins>
-                        </div>  
+                        </div>
                     </aside>
                     <aside>
                         <div class="grid-12">
@@ -102,8 +99,8 @@ $this->breadcrumb = [
                         </div>
                     </aside>
                 </mc-container>
-            </div>  
+            </div>
         </mc-tab>
-    </mc-tabs>        
+    </mc-tabs>
     <entity-actions :entity="entity"></entity-actions>
 </div>

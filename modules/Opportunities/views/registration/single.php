@@ -10,7 +10,7 @@ use MapasCulturais\i;
 
 $this->layout = 'registrations';
 
-$this->addOpportunityPhasesToJs();
+$this->addOpportunityPhasesToJs($entity);
 $this->addRegistrationPhasesToJs();
 
 $this->import('
@@ -24,7 +24,9 @@ $this->import('
     opportunity-header
     opportunity-phases-timeline
     registration-print
+    registration-workplan-form
     v1-embed-tool
+    registration-evaluation-tab
 ');
 
 if($this->isRequestedEntityMine()){
@@ -48,6 +50,17 @@ $this->breadcrumb = [
 ];
 
 $entity = $entity->firstPhase;
+
+$registration = $entity ;
+$result = [];
+if($all_registrations = $app->repo('Registration')->findBy(['number' => $entity->number])) {
+    foreach($all_registrations as $reg) {
+        $em = $reg->evaluationMethod;
+        $result[$reg->id] = $em ? $em->shouldDisplayEvaluationResults($reg) : false;
+    }
+}
+
+$this->jsObject['config']['registrationResults']['shouldDisplayEvaluationResults'] = $result;
 
 $today = new DateTime();
 ?>
@@ -129,7 +142,7 @@ $today = new DateTime();
                 <mc-card>
                     <template #content>
 
-                        <opportunity-phases-timeline center big></opportunity-phases-timeline>
+                        <opportunity-phases-timeline :entity-status="entity.status" center big></opportunity-phases-timeline>
 
                     </template>
                 </mc-card>
@@ -207,7 +220,7 @@ $today = new DateTime();
                         <div v-if="entity.agentRelations.hasOwnProperty('coletivo') && entity.agentRelations.coletivo[0]" class="space">
                             <mc-avatar :entity="entity.agentRelations.coletivo[0].agent" size="xsmall"></mc-avatar>
                             <div class="name">
-                                <a href="entity?.agentRelations.coletivo[0].agent.singleUrl" class="registration__collective-link bold" :class="[entity.agentRelations.coletivo[0]['@entityType'] + '__color']"> {{entity?.agentRelations.coletivo[0].agent.name}} </a>
+                                <a :href="entity?.agentRelations.coletivo[0].agent.singleUrl" class="registration__collective-link bold" :class="[entity.agentRelations.coletivo[0]['@entityType'] + '__color']"> {{entity?.agentRelations.coletivo[0].agent.name}} </a>
                             </div>
                         </div>
                         <div v-if="!entity.agentRelations.hasOwnProperty('coletivo')" class="space">
@@ -306,6 +319,9 @@ $today = new DateTime();
                                 <?php else: ?>
                                     <?php $this->applyTemplateHook("registration-form-view", 'before', [$phase]) ?>
                                     <v1-embed-tool route="registrationview" :id="<?=$phase->id?>"></v1-embed-tool>
+                                    <?php if ($opportunity->isReportingPhase && $opportunity->parent->enableWorkplan): ?>
+                                        <registration-workplan-form :phase-id="<?= $opportunity->id ?>"></registration-workplan-form>
+                                    <?php endif; ?>
                                     <?php $this->applyTemplateHook("registration-form-view", 'after', [$phase]) ?>
                                 <?php endif ?>
 
@@ -314,27 +330,27 @@ $today = new DateTime();
                     <?php endif ?>
                     <?php $phase = $phase->nextPhase; ?>
                 <?php endwhile ?>
-
             </div>
         </mc-tab>
 
         <mc-tab v-if="entity.opportunity.currentUserPermissions['@control']" label="<?= i::_e('Avaliadores') ?>" slug="valuers">
             <div class="registration__content">
+                <mc-tabs>
                 <?php $phase = $entity;
-                    while($phase): $opportunity = $phase->opportunity;?>
-                    <mc-card>
-                        <?php if($today >= $opportunity->registrationFrom):?>
-                            <?php if($opportunity->isFirstPhase):?>
-                                <h2><?= i::__('Inscrição') ?></h2>
-                            <?php else: ?>
-                                <h2><?= $opportunity->name ?></h2>
-                            <?php endif ?>
-
-                            <v1-embed-tool route="valuers" :id="<?=$phase->id?>"></v1-embed-tool>
-                        <?php endif ?>
-                        <?php $phase = $phase->nextPhase; ?>
-                    </mc-card>
-                <?php endwhile ?>
+                    while($phase):
+                        if (!($emc = $phase->opportunity->evaluationMethodConfiguration)) {
+                            $phase = $phase->nextPhase;
+                            continue;
+                        }
+                        ?>
+                        <mc-tab label="<?= htmlspecialchars($emc->name) ?>" slug="valuers-<?= $phase->opportunity->id ?>">
+                            <mc-card>
+                                <registration-evaluation-tab :phase-id="<?= $phase->opportunity->id ?>"></registration-evaluation-tab>
+                            </mc-card>
+                        </mc-tab>
+                    <?php $phase = $phase->nextPhase;
+                    endwhile ?>
+                </mc-tabs>
             </div>
         </mc-tab>
 

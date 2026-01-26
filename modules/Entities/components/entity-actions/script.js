@@ -1,10 +1,10 @@
-app.component('entity-actions', {
-    template: $TEMPLATES['entity-actions'],
+app.component("entity-actions", {
+    template: $TEMPLATES["entity-actions"],
     emits: [],
 
     setup() {
-        const text = Utils.getTexts('entity-actions')
-        return { text }
+        const text = Utils.getTexts("entity-actions");
+        return { text };
     },
 
     created() {},
@@ -17,26 +17,26 @@ app.component('entity-actions', {
 
     data() {
         const empty = false;
-        return {empty}
+        return { empty };
     },
 
     computed: {
         entityType() {
-            switch (this.entity['__objectType']) {
-                case 'agent':
-                    return __('Agente', 'entity-actions');
+            switch (this.entity["__objectType"]) {
+                case "agent":
+                    return __("Agente", "entity-actions");
 
-                case 'event':
-                    return __('Evento', 'entity-actions');
+                case "event":
+                    return __("Evento", "entity-actions");
 
-                case 'opportunity':
-                    return __('Oportunidade', 'entity-actions');
+                case "opportunity":
+                    return __("Oportunidade", "entity-actions");
 
-                case 'space':
-                    return __('Espaço', 'entity-actions');
-                
-                case 'project':
-                    return __('Projeto', 'entity-actions');
+                case "space":
+                    return __("Espaço", "entity-actions");
+
+                case "project":
+                    return __("Projeto", "entity-actions");
             }
         },
     },
@@ -44,33 +44,37 @@ app.component('entity-actions', {
     props: {
         entity: {
             type: Entity,
-            required: true 
+            required: true,
         },
         editable: {
             type: Boolean,
-            default: false
+            default: false,
         },
         canDelete: {
             type: Boolean,
-            default: true
-        }
+            default: true,
+        },
     },
-    
+
     methods: {
         save() {
             const event = new Event("entitySave");
-            this.entity.save().then(() => {
+
+            const updateMethod =
+                $MAPAS.config["entity-actions"]["updateMethod"];
+
+            this.entity.save({ updateMethod }).then(() => {
+                this.entity.validate();
                 window.dispatchEvent(event);
-                //this.exit();
             });
         },
         publish() {
             this.entity.publish().then(() => {
-                window.location.href = this.entity.getUrl('single');
+                window.location.href = this.entity.getUrl("single");
             });
         },
         exit() {
-            window.location.href = this.entity.getUrl('single');
+            window.location.href = this.entity.getUrl("single");
         },
     },
 });

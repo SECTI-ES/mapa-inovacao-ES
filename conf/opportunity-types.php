@@ -4,6 +4,57 @@ use MapasCulturais\Utils;
 /**
  * See https://github.com/Respect/Validation to know how to write validations
  */
+
+function compareNamesOpportunity ($item1, $item2) {
+    return strcmp($item1['name'], $item2['name']);
+}
+
+$items = array(
+    7 =>  array( 'name' => \MapasCulturais\i::__("Ciclo")),
+    24 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Setorial")),
+    25 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Nacional")),
+    26 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Estadual")),
+    27 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Municipal")),
+    10 => array( 'name' => \MapasCulturais\i::__("Concurso")),
+    6 =>  array( 'name' => \MapasCulturais\i::__("Convenção")),
+    18 => array( 'name' => \MapasCulturais\i::__("Congresso")),
+    22 => array( 'name' => \MapasCulturais\i::__("Curso")),
+    9 =>  array( 'name' => \MapasCulturais\i::__("Edital")),
+    11 => array( 'name' => \MapasCulturais\i::__("Exposição")),
+    2 =>  array( 'name' => \MapasCulturais\i::__("Encontro")),
+    13 => array( 'name' => \MapasCulturais\i::__("Exibição")),
+    1 =>  array( 'name' => \MapasCulturais\i::__("Festival")),
+    16 => array( 'name' => \MapasCulturais\i::__("Investimento")),
+    14 => array( 'name' => \MapasCulturais\i::__("Feira")),
+    21 => array( 'name' => \MapasCulturais\i::__("Fórum")),
+    15 => array( 'name' => \MapasCulturais\i::__("Intercâmbio Cultural")),
+    12 => array( 'name' => \MapasCulturais\i::__("Jornada")),
+    5 =>  array( 'name' => \MapasCulturais\i::__("Mostra")),
+    23 => array( 'name' => \MapasCulturais\i::__("Oficina")),
+    19 => array( 'name' => \MapasCulturais\i::__("Palestra")),
+    8 =>  array( 'name' => \MapasCulturais\i::__("Programa")),
+    4 =>  array( 'name' => \MapasCulturais\i::__("Reunião")),
+    20 => array( 'name' => \MapasCulturais\i::__("Simpósio")),
+    17 => array( 'name' => \MapasCulturais\i::__("Seminário")),
+    3 =>  array( 'name' => \MapasCulturais\i::__("Visita Técnica")),
+
+    //        30 => array( 'name' => \MapasCulturais\i::__("Parada e Desfile Militar")),
+    //        31 => array( 'name' => \MapasCulturais\i::__("Parada e Desfile Cívico")),
+    //        32 => array( 'name' => \MapasCulturais\i::__("Parada e Desfile Festivo")),
+    //        33 => array( 'name' => \MapasCulturais\i::__("Parada e Desfile Político")),
+    //        34 => array( 'name' => \MapasCulturais\i::__("Parada e Desfile de Ações Afirmativas")),
+
+    // tipos não existentes em projetos
+    40 => array( 'name' => \MapasCulturais\i::__("Abaixo-assinado")),
+    41 => array( 'name' => \MapasCulturais\i::__("Campanhas")),
+    42 => array( 'name' => \MapasCulturais\i::__("Pesquisa")),
+    43 => array( 'name' => \MapasCulturais\i::__("Oportunidade de trabalho")),
+    44 => array( 'name' => \MapasCulturais\i::__("Outros eventos")),
+    45 => array( 'name' => \MapasCulturais\i::__("Outros tipos de inscrição")),
+);
+
+uasort($items, 'compareNamesOpportunity');
+
 return array(
     'metadata' => array(
 
@@ -17,7 +68,8 @@ return array(
 
         'registrationLimitPerOwner' => array(
             'type' => 'integer',
-            'label' => \MapasCulturais\i::__('Número máximo de inscrições por agente responsável'),
+            'label' => \MapasCulturais\i::__('Limite de inscritos por agente'),
+            // 'description' => \MapasCulturais\i::__('Defina o limite de inscritos por agente responsável pela avaliação.'),
             'validations' => array(
                 "v::intVal()" => \MapasCulturais\i::__("O número máximo de inscrições por agente responsável deve ser um número inteiro")
             )
@@ -25,7 +77,8 @@ return array(
 
         'registrationLimit' => array(
             'type' => 'integer',
-            'label' => \MapasCulturais\i::__('Número máximo de inscrições na oportunidade'),
+            'label' => \MapasCulturais\i::__('Limite de inscrições'),
+            // 'description' => \MapasCulturais\i::__('Defina se haverá uma quantidade máxima de inscritos (0 = sem limites).'),
             'validations' => array(
                 "v::intVal()" => \MapasCulturais\i::__("O número máximo de inscrições na oportunidade deve ser um número inteiro")
             )
@@ -53,21 +106,21 @@ return array(
                 return Utils::parseSocialMediaUser('facebook.com', $value);
             },
             'validations' => array(
-                "v::oneOf(v::urlDomain('facebook.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL válida ou o nome ou id do usuário.")
+                "v::oneOf(v::urlDomain('facebook.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL válida ou o nome ou id do usuário.")
             ),
-            'placeholder' => "nomedousuario ou iddousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario ou iddousuario'),
             'available_for_opportunities' => true
         ),
         'twitter' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('Twitter'),
             'serialize' =>function($value){
-                return Utils::parseSocialMediaUser('twitter.com', $value);
+                return Utils::parseSocialMediaUser('x.com', $value);
             },
             'validations' => array(
-                "v::oneOf(v::urlDomain('twitter.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('x.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
         ),
         'instagram' => array(
@@ -75,71 +128,87 @@ return array(
             'label' => \MapasCulturais\i::__('Instagram'),
             'available_for_opportunities' => true,
             'serialize' =>function($value){
-                return Utils::parseSocialMediaUser('instagram.com', $value);
+                $result = Utils::parseSocialMediaUser('instagram.com', $value);
+                if($result && $result[0] == '@'){
+                    $result = substr($result,1);
+                }
+                return $result;
             },
             'validations' => array(
-                "v::oneOf(v::urlDomain('instagram.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('instagram.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
         ),
         'linkedin' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('Linkedin'),
             'serialize' =>function($value){
-                return Utils::parseSocialMediaUser('linkedin.com', $value);
+                return Utils::parseSocialMediaUser('linkedin.com', $value, 'linkedin');
             },
             'validations' => array(
-                "v::oneOf(v::urlDomain('linkedin.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('linkedin.com'), v::regex('/^@?([\-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
         ),
         'vimeo' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('Vimeo'),
             'validations' => array(
-                "v::oneOf(v::urlDomain('vimeo.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('vimeo.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
             'serialize' =>function($value){
                 return Utils::parseSocialMediaUser('vimeo.com', $value);
             },
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
         ),
         'spotify' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('Spotify'),
             'validations' => array(
-                "v::oneOf(v::urlDomain('spotify.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('open.spotify.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
-            'serialize' =>function($value){
-                return Utils::parseSocialMediaUser('spotify.com', $value);
+            'serialize' => function($value) {
+                return Utils::parseSocialMediaUser('open.spotify.com', $value);
             },
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
         ),
         'youtube' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('YouTube'),
             'validations' => array(
-                "v::oneOf(v::urlDomain('youtube.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('youtube.com'), v::regex('/^(@|channel\/)?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
             'serialize' =>function($value){
                 return Utils::parseSocialMediaUser('youtube.com', $value);
             },
-            'placeholder' => "iddocanal",
+            'placeholder' => \MapasCulturais\i::__('iddocanal'),
             'available_for_opportunities' => true
         ),
         'pinterest' => array(
             'type' => "socialMedia",
             'label' => \MapasCulturais\i::__('Pinterest'),
             'validations' => array(
-                "v::oneOf(v::urlDomain('pinterest.com'), v::regex('/^@?([\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+                "v::oneOf(v::urlDomain('pinterest.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
             ),
             'serialize' =>function($value){
                 return Utils::parseSocialMediaUser('pinterest.com', $value);
             },
-            'placeholder' => "nomedousuario",
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
+            'available_for_opportunities' => true
+        ),
+        'tiktok' => array(
+            'type' => "socialMedia",
+            'label' => \MapasCulturais\i::__('Tiktok'),
+            'serialize' =>function($value){
+                return Utils::parseSocialMediaUser('tiktok.com', $value);
+            },
+            'validations' => array(
+                "v::oneOf(v::urlDomain('tiktok.com'), v::regex('/^@?([-\w\d\.]+)$/i'))" => \MapasCulturais\i::__("O valor deve ser uma URL ou usuário válido.")
+            ),
+            'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
         ),
         'registrationSeals' => array(
@@ -152,6 +221,7 @@ return array(
         'projectName' => array(
             'label' => \MapasCulturais\i::__('Nome do Projeto'),
             'type' => 'select',
+            'default' => '0',
             'options' => (object) array(
                 '0' => \MapasCulturais\i::__('Não Utilizar'),
                 '1' => \MapasCulturais\i::__('Opcional'),
@@ -162,45 +232,57 @@ return array(
                 return intval($val);
             }
         ),
+
+        'totalResource' => array(
+            'type' => 'float',
+            'field_type' => 'currency',
+            'label' => \MapasCulturais\i::__('Valor total'),
+            // 'description' => \MapasCulturais\i::__("Valor total que esse edital irá disponibilizar."),
+        ),
+
+        'vacancies' => array(
+            'type' => 'integer',
+            'label' => \MapasCulturais\i::__('Total de vagas'),
+            // 'description' => \MapasCulturais\i::__("Quantidades de vagas que esse edital irá disponibilizar."),
+        ),
+
+        'isModel' => array(
+            'type' => 'integer',
+            'label' => \MapasCulturais\i::__('É modelo?'),
+            'default_value' => 0
+        ),
+        'isModelPublic' => array(
+            'type' => 'integer',
+            'label' => \MapasCulturais\i::__('É modelo público?'),
+        ),
+
+        'requestAgentAvatar' => array(
+            'label' => \MapasCulturais\i::__('Solicitar avatar'),
+            'type' => 'radio',
+            'default' => '0',
+            'options' => (object) array(
+                '0' => \MapasCulturais\i::__('Desabilitado'),
+                '1' => \MapasCulturais\i::__('Habilitado'),
+            ),
+            'unserialize' => function($value) {
+               return ($value == 0 || $value == "" || $value == "0") ? false : true;
+            }
+        ),
+
+        'isModel' => array(
+            'type' => 'integer',
+            'label' => \MapasCulturais\i::__('É modelo?'),
+            'default_value' => 0
+        ),
+
+        'isModelPublic' => array(
+            'type' => 'integer',
+            'label' => \MapasCulturais\i::__('É modelo público?'),
+        ),
+
     ),
-    'items' => array(
-        1 =>  array( 'name' => \MapasCulturais\i::__("Festival")),
-        2 =>  array( 'name' => \MapasCulturais\i::__("Encontro")),
-        3 =>  array( 'name' => \MapasCulturais\i::__("Visita Técnica")),
-        4 =>  array( 'name' => \MapasCulturais\i::__("Reunião")),
-        5 =>  array( 'name' => \MapasCulturais\i::__("Mostra")),
-        6 =>  array( 'name' => \MapasCulturais\i::__("Convenção")),
-        7 =>  array( 'name' => \MapasCulturais\i::__("Ciclo")),
-        8 =>  array( 'name' => \MapasCulturais\i::__("Programa")),
-        9 =>  array( 'name' => \MapasCulturais\i::__("Edital")),
-        10 => array( 'name' => \MapasCulturais\i::__("Concurso")),
-        11 => array( 'name' => \MapasCulturais\i::__("Exposição")),
-        12 => array( 'name' => \MapasCulturais\i::__("Jornada")),
-        13 => array( 'name' => \MapasCulturais\i::__("Exibição")),
-        14 => array( 'name' => \MapasCulturais\i::__("Feira")),
-        15 => array( 'name' => \MapasCulturais\i::__("Intercâmbio Cultural")),
-        16 => array( 'name' => \MapasCulturais\i::__("Investimento")),
-        17 => array( 'name' => \MapasCulturais\i::__("Seminário")),
-        18 => array( 'name' => \MapasCulturais\i::__("Congresso")),
-        19 => array( 'name' => \MapasCulturais\i::__("Palestra")),
-        20 => array( 'name' => \MapasCulturais\i::__("Simpósio")),
-        21 => array( 'name' => \MapasCulturais\i::__("Fórum")),
-        22 => array( 'name' => \MapasCulturais\i::__("Curso")),
-        23 => array( 'name' => \MapasCulturais\i::__("Oficina")),
-        24 => array( 'name' => \MapasCulturais\i::__("Jornada")),
-        25 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Setorial")),
-        26 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Nacional")),
-        27 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Estadual")),
-        28 => array( 'name' => \MapasCulturais\i::__("Conferência Pública Municipal")),
-        40 => array( 'name' => \MapasCulturais\i::__("Abaixo-assinado")),
-        41 => array( 'name' => \MapasCulturais\i::__("Campanhas")),
-        42 => array( 'name' => \MapasCulturais\i::__("Pesquisa")),
-        43 => array( 'name' => \MapasCulturais\i::__("Oportunidade de trabalho")),
-        44 => array( 'name' => \MapasCulturais\i::__("Outros eventos")),
-        45 => array( 'name' => \MapasCulturais\i::__("Outros tipos de inscrição")),
+    'items' => $items,
 
-
-    )
     /* EXEMPLOS DE METADADOS:
 
     'cnpj' => array(

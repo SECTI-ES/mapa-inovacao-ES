@@ -1,45 +1,47 @@
-app.component('entity-field', {
-    template: $TEMPLATES['entity-field'],
-    emits: ['change', 'save'],
+app.component("entity-field", {
+    template: $TEMPLATES["entity-field"],
+    emits: ["change", "save"],
 
-    setup(props, { slots }) {
-        const hasSlot = name => !!slots[name]
-        return { hasSlot }
+    setup(props) {
+        const propId = Vue.useId();
+        return { propId };
     },
 
-    data() {         
-        let uid = Math.random().toString(36).slice(2);
-        let description, 
+    data() {
+        let description,
             value = this.entity[this.prop];
 
         description = this.entity.$PROPERTIES[this.prop] || {};
-        
-        if (description.type == 'array' && !(value instanceof Array)) {
+
+        if (description.type == "array" && !(value instanceof Array)) {
             if (!value) {
                 value = [];
             } else {
                 value = [value];
             }
         }
-        
-        let isAdmin = function() {
+
+        let isAdmin = function () {
             let result = false;
-            $MAPAS.currentUserRoles.forEach(function(item){
-                if(item.toLowerCase().match('admin')){
+            $MAPAS.currentUserRoles.forEach(function (item) {
+                if (item.toLowerCase().match("admin")) {
                     result = true;
                     return;
                 }
-            })
+            });
 
             return result;
-        }
+        };
 
-        if(this.entity.__objectType === "agent" && this.prop === "type" && !isAdmin()){
-            
+        if (
+            this.entity.__objectType === "agent" &&
+            this.prop === "type" &&
+            !isAdmin()
+        ) {
             var typeOptions = {};
             var optionsOrder = [];
-            Object.keys(description.options).forEach(function(item, index){
-                if(description.options[item] != "Pessoa Física"){
+            Object.keys(description.options).forEach(function (item, index) {
+                if (description.options[item] != "Pessoa Física") {
                     typeOptions[index] = description.options[item];
                     optionsOrder.push(parseInt(index));
                 }
@@ -50,102 +52,182 @@ app.component('entity-field', {
 
         let fieldType = this.type || description.field_type || description.type;
 
-        if(this.type == 'textarea' || (description.type == 'text' && description.field_type === undefined)) {
-            fieldType = 'textarea';
+        if (
+            this.type == "textarea" ||
+            (description.type == "text" && description.field_type === undefined)
+        ) {
+            fieldType = "textarea";
+        }
+
+        if (!description.min) {
+            description.min = 0;
+        }
+
+        /**
+         * Aqui podemos passar alguns itens que eventualmente não queremos que sejam listados em alguma tela
+         */
+        if (this.entity.removeOptions && description.options) {
+            const removedOptions = [];
+            const { removeOptions } = this.entity;
+
+            description.options = Object.fromEntries(
+                Object.entries(description.options).filter(([key, value]) => {
+                    const optionFound = removeOptions.includes(value);
+                    if (optionFound) {
+                        removedOptions.push(parseInt(key));
+                    }
+
+                    return !optionFound;
+                }),
+            );
+
+            description.optionsOrder = Array.isArray(description.optionsOrder)
+                ? description.optionsOrder.filter(
+                      (key) => !removedOptions.includes(key),
+                  )
+                : Object.values(description.optionsOrder).filter(
+                      (item) => !removedOptions.includes(item),
+                  );
         }
 
         return {
             __timeout: null,
             description: description,
-            propId: `${this.entity.__objectId}--${this.prop}--${uid}`,
             fieldType,
             currencyValue: this.entity[this.prop],
-            readonly: false
-        }
+            readonly: false,
+            selectedOptions: [],
+        };
     },
 
     props: {
         entity: {
             type: Entity,
-            required: true
+            required: true,
         },
         prop: {
             type: String,
-            required: true
+            required: true,
         },
         label: {
             type: String,
-            default: null
+            default: null,
         },
         placeholder: {
-            type: String
+            type: String,
         },
         type: {
             type: String,
-            default: null
+            default: null,
         },
         hideLabel: {
             type: Boolean,
-            default: false
+            default: false,
         },
         hideDescription: {
             type: Boolean,
-            default: false
+            default: false,
         },
         hideRequired: {
             type: Boolean,
-            default: false
+            default: false,
         },
         debounce: {
             type: Number,
-            default: 0
+            default: 0,
         },
         classes: {
             type: [String, Array, Object],
-            required: false
+            required: false,
         },
         min: {
-            type: [ Number, String, Date ],
-            default: 0 || null
+            type: [Number, String, Date],
+            default: null,
         },
         max: {
-            type: [ Number, String, Date ],
-            default: 0 || null
+            type: [Number, String, Date],
+            default: null,
         },
+
+        maxLength: {
+            type: Number,
+            default: null,
+        },
+
         fieldDescription: {
             type: String,
-            default: null
+            default: null,
         },
         autosave: {
             type: Number,
         },
         disabled: {
             type: Boolean,
-            default: false
+            default: false,
         },
         mask: {
             type: String,
             default: null,
+        },
+
+        maxOptions: {
+            type: Number,
+            default: 0,
+        },
+
+        descriptionFirst: {
+            type: Boolean,
+            default: false,
+        },
+
+        editable: {
+            type: Boolean,
+            default: false,
+        },
+
+        preserveOrder: {
+            type: Boolean,
+            default: false,
+        },
+        titleModal: {
+            type: String,
+            required: false,
+            default: "Anexar",
+        },
+        groupName: {
+            type: String,
+            required: false,
         },
     },
 
     created() {
         this.isReadonly();
 
-        window.addEventListener(
-            "entitySave",
-            this.isReadonly
-        );
+        window.addEventListener("entitySave", this.isReadonly);
+
+        if (this.isMultiSelect()) {
+            if (!this.entity[this.prop]) {
+                this.entity[this.prop] = [];
+            } else if (typeof this.entity[this.prop] !== "object") {
+                this.entity[this.prop] = this.entity[this.prop].split(";");
+            }
+
+            this.selectedOptions[this.prop] = [...this.entity[this.prop]];
+        }
+    },
+
+    mounted() {
+        if (this.is("textarea")) {
+            this.$refs.textarea.style.height = "auto";
+            this.$refs.textarea.style.height =
+                this.$refs.textarea.scrollHeight + 10 + "px";
+        }
     },
 
     computed: {
-      
-        charRemaining() {
-            return 400 - this.value.length;
-        },
         hasErrors() {
             let errors = this.entity.__validationErrors[this.prop] || [];
-            if(errors.length > 0){
+            if (errors.length > 0) {
                 return true;
             } else {
                 return false;
@@ -156,87 +238,277 @@ app.component('entity-field', {
         },
         value() {
             return this.entity[this.prop]?.id ?? this.entity[this.prop];
-        }
+        },
+        entitiesFildTypes() {
+            return ["agent-owner-field", "agent-collective-field"];
+        },
     },
-    
+
     methods: {
         isRadioChecked(value, optionValue) {
-            if(value == optionValue) {
+            if (value == optionValue) {
                 return true;
             }
 
-            if(value == null && this.description?.default) {
+            if (value == null && this.description?.default) {
                 return optionValue == this.description?.default;
             }
-            
-            return false;            
+
+            return false;
         },
-        propExists(){
-            return !! this.entity.$PROPERTIES[this.prop];
+        propExists() {
+            return !!this.entity.$PROPERTIES[this.prop];
         },
 
         change(event, now) {
             clearTimeout(this.__timeout);
-            let oldValue = this.entity[this.prop] ? JSON.parse(JSON.stringify(this.entity[this.prop])) : null;
-            
+            let oldValue = this.entity[this.prop]
+                ? JSON.parse(JSON.stringify(this.entity[this.prop]))
+                : null;
+
             this.__timeout = setTimeout(() => {
-               if(this.is('date') || this.is('datetime') || this.is('time')) {
-                    if(event) {
+                if (this.is("date") || this.is("datetime") || this.is("time")) {
+                    if (event) {
                         this.entity[this.prop] = new McDate(event);
                     } else {
-                        this.entity[this.prop] = '';
+                        this.entity[this.prop] = "";
                     }
 
-                    this.$emit('change', {entity: this.entity, prop: this.prop, oldValue: oldValue, newValue: event});
-                } else if(this.is('currency')) {
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event,
+                    });
+                } else if (this.is("currency")) {
                     this.entity[this.prop] = this.currencyValue;
-                    this.$emit('change', {entity: this.entity, prop: this.prop, oldValue: oldValue, newValue: event.target.checked});
-                } else if(this.is('checkbox')) {
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event.target.checked,
+                    });
+                } else if (this.is("checkbox")) {
                     this.entity[this.prop] = event.target.checked;
-                    this.$emit('change', {entity: this.entity, prop: this.prop, oldValue: oldValue, newValue: event.target.checked});
-                } else if (this.is('multiselect')) {
-                    if (this.entity[this.prop] === '' || !this.entity[this.prop]) {
-                        this.entity[this.prop] = []
-                    } else if (typeof this.entity[this.prop] !== 'object') {
-                        this.entity[this.prop] = this.entity[this.prop].split(";");
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event.target.checked,
+                    });
+                } else if (this.is("bankFields")) {
+                    let fieldEmpty = false;
+
+                    if (this.description.required) {
+                        Object.keys(event).forEach((field) => {
+                            if (!event[field]) {
+                                fieldEmpty = true;
+                            }
+                        });
                     }
 
-                    let index = this.entity[this.prop].indexOf(event.target.value);
-                    if (index >= 0) {
-                        this.entity[this.prop].splice(index, 1);
+                    if (!fieldEmpty) {
+                        this.entity.__validationErrors = {};
+                        this.entity[this.prop] = event;
+
+                        this.$emit("change", {
+                            entity: this.entity,
+                            prop: this.prop,
+                            oldValue: oldValue,
+                            newValue: event,
+                        });
                     } else {
-                        this.entity[this.prop].push(event.target.value)
+                        this.entity.__validationErrors = {
+                            ...this.entity.__validationErrors,
+                            [this.prop]: [
+                                "Os dados bancarios são obrigatorios",
+                            ],
+                        };
+                    }
+                } else if (this.is("multiselect") || this.is("checklist")) {
+                    if (
+                        this.entity[this.prop] === "" ||
+                        !this.entity[this.prop]
+                    ) {
+                        this.entity[this.prop] = [];
+                    } else if (typeof this.entity[this.prop] !== "object") {
+                        this.entity[this.prop] =
+                            this.entity[this.prop].split(";");
                     }
 
-                    this.$emit('change', {entity: this.entity, prop: this.prop, oldValue: oldValue, newValue: event.target.value});
+                    let value = event.target ? event.target.value : event;
+                    let index = this.entity[this.prop].indexOf(value);
+
+                    if (value == "@NA") {
+                        if (index < 0) {
+                            this.entity[this.prop] = ["@NA"];
+                        } else {
+                            this.entity[this.prop].splice(index, 1);
+                        }
+                    } else {
+                        const ndIndex = this.entity[this.prop].indexOf("@NA");
+
+                        if (ndIndex >= 0) {
+                            this.entity[this.prop].splice(ndIndex, 1);
+                        }
+
+                        if (index >= 0) {
+                            this.entity[this.prop].splice(index, 1);
+                        } else {
+                            if (
+                                (!this.isMultiSelect() && !this.maxOptions) ||
+                                this.entity[this.prop].length < this.maxOptions
+                            ) {
+                                this.entity[this.prop].push(value);
+                            } else {
+                                this.entity[this.prop].push(value);
+                            }
+                        }
+                    }
+
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: value,
+                    });
+                } else if (this.is("links")) {
+                    this.entity[this.prop] = event;
+
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event,
+                    });
+                } else if (this.is("municipio")) {
+                    this.entity[this.prop] = event;
+
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event,
+                    });
                 } else {
                     this.entity[this.prop] = event.target.value;
-                    this.$emit('change', {entity: this.entity, prop: this.prop, oldValue: oldValue, newValue: event.target.value});
-                }
-
-                if (this.autosave && (now || JSON.stringify(this.entity[this.prop]) != JSON.stringify(oldValue))) {
-                    this.entity.save(now ? 0 : this.autosave).then(() => {
-                        this.$emit('save', this.entity);
+                    this.$emit("change", {
+                        entity: this.entity,
+                        prop: this.prop,
+                        oldValue: oldValue,
+                        newValue: event.target.value,
                     });
                 }
 
-            }, now ? 0 : this.debounce);
+                if (
+                    this.autosave &&
+                    (now ||
+                        JSON.stringify(this.entity[this.prop]) !=
+                            JSON.stringify(oldValue))
+                ) {
+                    this.entity.save(this.autosave).then(() => {
+                        this.$emit("save", this.entity);
+                    });
+                }
+            }, this.debounce);
+
+            if (this.is("textarea") && event.target) {
+                event.target.style.height = "auto";
+                event.target.style.height =
+                    event.target.scrollHeight + 20 + "px";
+            }
         },
 
         is(type) {
+            if (type == "location") {
+                let fieldConfig =
+                    this.description.registrationFieldConfiguration.config;
+                return fieldConfig.entityField == "@location";
+            }
             return this.fieldType == type;
         },
 
-        isReadonly() {
-            const userPermission = this.entity.currentUserPermissions?.modifyReadonlyData;
+        isMultiSelect() {
+            let registrationFieldConfiguration =
+                this.description.registrationFieldConfiguration;
 
-            if(this.description.readonly) {
-                if(userPermission || !this.value) {
-                    this.readonly = false;
+            if (this.is("multiselect")) {
+                if (
+                    registrationFieldConfiguration?.fieldType &&
+                    this.entitiesFildTypes.includes(
+                        registrationFieldConfiguration?.fieldType,
+                    )
+                ) {
+                    const config = registrationFieldConfiguration?.config;
+                    return (
+                        config?.viewMode === "tag" ||
+                        (!config?.viewMode &&
+                            this.description.optionsOrder?.length > 15)
+                    );
                 } else {
-                    this.readonly = true;
+                    return true;
+                }
+            } else if (this.is("checklist")) {
+                const config = registrationFieldConfiguration?.config;
+                return (
+                    config?.viewMode === "tag" ||
+                    (!config?.viewMode &&
+                        this.description.optionsOrder?.length > 15)
+                );
+            } else {
+                return false;
+            }
+        },
+
+        isReadonly() {
+            const userPermission =
+                this.entity.currentUserPermissions?.modifyReadonlyData;
+            const lockedFieldSeals = this.entity.__lockedFieldSeals;
+
+            if (
+                this.entity.__objectType == "registration" &&
+                this.description.registrationFieldConfiguration
+            ) {
+                const registrationConfig =
+                    this.description.registrationFieldConfiguration;
+
+                if (
+                    registrationConfig.fieldType == "agent-owner-field" &&
+                    registrationConfig.config?.entityField
+                ) {
+                    const agentFieldName =
+                        registrationConfig.config.entityField;
+
+                    if (
+                        $DESCRIPTIONS.agent &&
+                        $DESCRIPTIONS.agent[agentFieldName]
+                    ) {
+                        const agentDescription =
+                            $DESCRIPTIONS.agent[agentFieldName];
+
+                        if (agentDescription.readonly) {
+                            this.readonly = !(userPermission || !this.value);
+                            return this.readonly;
+                        }
+                    }
                 }
             }
-        }
+
+            if (this.description.readonly) {
+                this.readonly = !(userPermission || !this.value);
+            }
+
+            if (lockedFieldSeals && lockedFieldSeals[this.prop]) {
+                this.readonly = true;
+            }
+
+            const lockedFields = this.entity.__lockedFields || [];
+
+            if (lockedFields.includes(this.prop)) {
+                this.readonly = true;
+            }
+
+            return this.readonly;
+        },
     },
 });

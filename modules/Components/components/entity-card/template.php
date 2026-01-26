@@ -8,7 +8,7 @@ use MapasCulturais\i;
 
 $this->import('
 	mc-avatar
-	mc-icon 
+	mc-icon
 	mc-title
 ');
 ?>
@@ -26,7 +26,7 @@ $this->import('
 				</a>
 				<slot name="type">
 					<div v-if="entity.type" class="user-info__attr">
-						<?php i::_e('Tipo:') ?> {{entity.type.name}}
+						<?php i::_e('Tipo:') ?> {{entity.type?.name}}
 					</div>
 				</slot>
 			</div>
@@ -49,14 +49,14 @@ $this->import('
 
 		<template v-if="entity.__objectType=='opportunity'">
 			<!-- inscrições abertas -->
-			<div v-if="openSubscriptions" class="entity-card__registration">
+			<div v-if="showEndDateText" class="entity-card__registration">
 				<p :class="[entity.__objectType+'__color', 'bold', {'small' : $media('max-width: 500px')}]">
 					<?= i::__('As inscrições encerrarão no dia') ?> {{entity.registrationTo?.date('2-digit year')}} <?= i::__('às') ?> {{entity.registrationTo?.time()}}
 				</p>
 			</div>
 
 			<!-- inscrições futuras -->
-			<div v-if="entity.registrationFrom?.isFuture()" class="entity-card__registration">
+			<div v-if="entity.registrationFrom?.isFuture() && (!entity.isContinuousFlow || (entity.isContinuousFlow && entity.hasEndDate))" class="entity-card__registration">
 				<div class="entity-card__period">
 					<p :class="[entity.__objectType+'__color', 'bold', {'small' : $media('max-width: 500px')}]" v-if="entity.registrationFrom && entity.registrationTo">
 						<?= i::__('Inscrições de') ?> {{entity.registrationFrom.date('2-digit year')}} <?= i::__('até') ?> {{entity.registrationTo.date('2-digit year')}} <?= i::__('às') ?> {{entity.registrationTo.time()}}
@@ -78,21 +78,14 @@ $this->import('
 
 		<div v-if="entity.__objectType=='space'" class="entity-card__content--description">
 			<label><?= i::_e('ACESSIBILIDADE:') ?>
-				<strong v-if="entity.acessibilidade"> <?= i::_e('Oferece') ?> </strong>
-				<strong v-if="!entity.acessibilidade"> <?= i::_e('Não') ?> </strong>
+				<strong v-if="entity.acessibilidade === 'Sim'"> <?= i::_e('Oferece') ?> </strong>
+				<strong v-else-if="entity.acessibilidade === 'Não'"> <?= i::_e('Não') ?> </strong>
+				<strong v-else> <?= i::_e('Não informado') ?> </strong>
 			</label>
 		</div>
 
 		<div class="entity-card__content--terms">
-			<div v-if="areas" class="entity-card__content--terms-area">
-				<label v-if="entity.__objectType === 'opportunity'" class="area__title">
-					<?php i::_e('Áreas de interesse:') ?> ({{entity.terms.area.length}}):
-				</label>
-				<label v-if="entity.__objectType === 'agent' || entity.__objectType === 'space'" class="area__title">
-					<?php i::_e('Áreas de atuação:') ?> ({{entity.terms.area.length}}):
-				</label>
-				<p :class="['terms', entity.__objectType+'__color']"> {{areas}} </p>
-			</div>
+			<?php $this->part('entity-card/area') ?>
 
 			<div v-if="tags" class="entity-card__content--terms-tag">
 				<label class="tag__title">

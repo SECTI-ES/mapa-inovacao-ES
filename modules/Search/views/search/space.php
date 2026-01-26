@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @var MapasCulturais\App $app
  * @var MapasCulturais\Themes\BaseV2\Theme $this
@@ -24,7 +24,7 @@ $this->breadcrumb = [
     ['label'=> i::__('Espaços'), 'url' => $app->createUrl('search', 'spaces')],
 ];
 ?>
-<search page-title="<?php i::esc_attr_e('Espaços') ?>" entity-type="space" :initial-pseudo-query="{'term:area':[], type:[]}">    
+<search page-title="<?= htmlspecialchars($this->text('title', i::__('Espaços'))) ?>" entity-type="space" :initial-pseudo-query="{'term:area':[], type:[]}">
     <template #create-button>
         <create-space v-if="global.auth.isLoggedIn" #default="{modal}">
             <button @click="modal.open()" class="button button--primary button--icon">
@@ -33,12 +33,12 @@ $this->breadcrumb = [
             </button>
         </create-space>
     </template>
-    <template #default="{pseudoQuery, changeTab}">        
+    <template #default="{pseudoQuery, changeTab}">
         <mc-tabs @changed="changeTab($event)" class="search__tabs" sync-hash>
             <template  #before-tablist>
                 <label class="search__tabs--before">
                     <?= i::_e('Visualizar como:') ?>
-                </label> 
+                </label>
             </template>
             <mc-tab icon="list" label="<?php i::esc_attr_e('Lista') ?>" slug="list">
                 <div class="search__tabs--list">
