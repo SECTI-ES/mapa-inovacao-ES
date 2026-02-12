@@ -42,6 +42,7 @@ app.component("entity-field", {
             var optionsOrder = [];
             Object.keys(description.options).forEach(function (item, index) {
                 if (description.options[item] != "Pessoa Física") {
+                    // Impede que uma pessoa física crie outra pessoa física
                     typeOptions[index] = description.options[item];
                     optionsOrder.push(parseInt(index));
                 }
@@ -464,6 +465,19 @@ app.component("entity-field", {
             const userPermission =
                 this.entity.currentUserPermissions?.modifyReadonlyData;
             const lockedFieldSeals = this.entity.__lockedFieldSeals;
+
+            if (this.entity.__objectType == "registration") {
+                const editableFields = this.entity.editableFields || [];
+
+                if (
+                    editableFields.length > 0 &&
+                    !editableFields.includes(this.prop) &&
+                    !userPermission
+                ) {
+                    this.readonly = true;
+                    return this.readonly;
+                }
+            }
 
             if (
                 this.entity.__objectType == "registration" &&

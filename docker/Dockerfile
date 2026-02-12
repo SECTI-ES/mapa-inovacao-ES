@@ -1,4 +1,4 @@
-FROM hacklab/mapasculturais:7.6.33
+FROM hacklab/mapasculturais:7.6.45
 
 COPY themes /var/www/src/themes
 COPY plugins /var/www/src/plugins
@@ -13,6 +13,8 @@ COPY docker/production/composer.json /var/www/composer.json
 COPY docker/common/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
 COPY docker/common/php-ini.d /usr/local/etc/php/conf.d
 COPY em-breve /var/www/html/em-breve
+
+COPY docker/common/entrypoint.sh /entrypoint.sh
 
 # WORKDIR /var/www/src
 # RUN pnpm install --recursive && pnpm run build
