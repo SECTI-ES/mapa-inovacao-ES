@@ -30,6 +30,23 @@ mkdir -p /var/www/var/DoctrineProxies /var/www/var/logs
 touch /var/www/var/logs/app.log
 chown -R www-data: /var/www/var/DoctrineProxies /var/www/var/logs
 
+# Criar estrutura de diretórios necessária
+mkdir -p /var/www/public/files/distributionslog
+# mkdir -p /var/www/private-files
+# mkdir -p /var/www/asset-locker
+
+# Ajustar permissões
+chown -R www-data:www-data /var/www/public/files
+# chown -R www-data:www-data /var/www/private-files
+# chown -R www-data:www-data /var/www/asset-locker
+
+# Permissões padrão para diretórios (755) e arquivos (644)
+find /var/www/public/files -type d -exec chmod 755 {} \;
+find /var/www/public/files -type f -exec chmod 644 {} \;
+
+# Diretórios que precisam de escrita precisam de permissão especial
+chmod -R 775 /var/www/public/files/distributionslog
+
 # ==============================================================================
 # 3. ATUALIZAÇÕES DE BANCO E SCHEMA
 # ==============================================================================
