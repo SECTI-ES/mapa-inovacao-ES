@@ -23,36 +23,32 @@ done
 # ==============================================================================
 # 2. CONFIGURAÇÃO DE DIRETÓRIOS E PERMISSÕES
 # ==============================================================================
-echo "📂 [Mapas] Configurando diretórios de cache e logs..."
+echo "📂 [Mapas] Configurando permissões de diretórios..."
 mkdir -p /var/www/var/DoctrineProxies /var/www/var/logs
 
 # Garante que o arquivo existe antes de mudar permissão
 touch /var/www/var/logs/app.log
-chown -R www-data: /var/www/var/DoctrineProxies /var/www/var/logs
+chown -R www-data:www-data /var/www/var/DoctrineProxies/ /var/www/var/logs/
 
 # Criar estrutura de diretórios necessária
 mkdir -p /var/www/public/files/distributionslog
+mkdir -p /var/www/var/private-files
 # mkdir -p /var/www/private-files
-# mkdir -p /var/www/asset-locker
 
 # Ajustar permissões
-chown -R www-data:www-data /var/www/public/files
-# chown -R www-data:www-data /var/www/private-files
-# chown -R www-data:www-data /var/www/asset-locker
+chown -R www-data:www-data /var/www/public/
+chown -R www-data:www-data /var/www/var/private-files/
+chown -R www-data:www-data /var/www/var/sessions/
+chown -R www-data:www-data /var/www/src/themes/
 
 # Permissões padrão para diretórios (755) e arquivos (644)
-find /var/www/public/files -type d -exec chmod 755 {} \;
-find /var/www/public/files -type f -exec chmod 644 {} \;
-
-# Diretórios que precisam de escrita precisam de permissão especial
-chmod -R 775 /var/www/public/files/distributionslog
+find /var/www/public -type d -exec chmod 755 {} \;
+find /var/www/public -type f -exec chmod 644 {} \;
 
 # ==============================================================================
 # 3. ATUALIZAÇÕES DE BANCO E SCHEMA
 # ==============================================================================
 echo "🔄 [Mapas] Executando scripts de atualização de banco..."
-
-chown -R www-data:www-data /var/www/var/sessions/
 
 # Dica: Adicione "|| true" se você quiser que o container suba mesmo se o update falhar
 sudo -E -u www-data /var/www/scripts/db-update.sh
@@ -74,7 +70,7 @@ fi
 
 if [ "$BUILD_ASSETS" = "1" ]; then
     echo "📦 [Mapas] BUILD_ASSETS=1 detectado. Instalando dependências JS..."
-    chown www-data: /var/www/public/assets
+    chown -R www-data:www-data /var/www/public/assets/
     cd /var/www/src
     # Adicionado --ignore-scripts para segurança se necessário, ou mantenha normal
     pnpm install --recursive
@@ -83,16 +79,7 @@ if [ "$BUILD_ASSETS" = "1" ]; then
 fi
 
 # ==============================================================================
-# 5. AJUSTE FINAL DE PERMISSÕES
-# ==============================================================================
-echo "🔒 [Mapas] Aplicando permissões finais..."
-# Verifica existência antes do chown para evitar erros
-[ -d /var/www/public/assets ] && chown www-data:www-data /var/www/public/assets
-[ -d /var/www/public/files ] && chown www-data:www-data /var/www/public/files
-[ -d /var/www/var/private-files ] && chown www-data:www-data /var/www/var/private-files
-
-# ==============================================================================
-# 6. CRONS E PROCESSO PRINCIPAL
+# 5. CRONS E PROCESSO PRINCIPAL
 # ==============================================================================
 echo "⏰ [Mapas] Inicializando CRONs..."
 
