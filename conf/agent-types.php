@@ -14,7 +14,11 @@ return array(
             'validations' => array(
                 //'required' => \MapasCulturais\i::__('Seu nome completo ou jurídico deve ser informado.')
             ),
-            'available_for_opportunities' => true
+            'available_for_opportunities' => true,
+            'serialize' => function($value, $entity = null) {
+                $value = trim(preg_replace('/\s+/', ' ', $value));
+                return $value;
+            }
         ),
 
         'nomeSocial' => array(
@@ -325,15 +329,25 @@ return array(
             'private' => true,
             'label' => \MapasCulturais\i::__('Data de Nascimento/Fundação'),
             'type' => 'date',
-            'serialize' => function($value, $entity = null){
-               if(is_null($value)) { return null; }
-               $this->hook("entity(<<*>>).save:before", function() use ($entity){
+            'serialize' => function ($value, $entity = null) {
+                if (is_null($value)) {
+                    return null;
+                }
+
+                $this->hook("entity(<<*>>).save:before", function () use ($entity) {
                     /** @var MapasCulturais\Entity $entity */
-                    if($this->equals($entity)){
+                    if ($this->equals($entity)) {
                         $this->idoso = 1;
                     }
-               });
-               return (new DateTime($value))->format("Y-m-d");
+                });
+
+                if (is_array($value) && isset($value['_date'])) {
+                    $value = $value['_date'];
+                } elseif (is_object($value) && isset($value->_date)) {
+                    $value = $value->_date;
+                }
+
+                return $value ? (new \DateTime($value))->format("Y-m-d") : null;
             },
             'validations' => array(
                 'v::date("Y-m-d")' => \MapasCulturais\i::__('Data inválida').'{{format}}',
@@ -722,6 +736,18 @@ return array(
             ),
             'placeholder' => \MapasCulturais\i::__('nomedousuario'),
             'available_for_opportunities' => true
+        ),
+        'fediverso' => array(
+            'type' => "socialMedia",
+            'label' => \MapasCulturais\i::__('Fediverso'),
+            'available_for_opportunities' => true,
+            'serialize' => function ($value) {
+                return $value;
+            },
+            'validations' => array(
+                "v::url()" => \MapasCulturais\i::__("A url informada é inválida.")
+            ),
+            'placeholder' => \MapasCulturais\i::__('https://nomedoservidor.com.br/@nomedousuario'),
         ),
     ),
     'items' => array(

@@ -42,7 +42,7 @@ app.component("entity-field", {
             var optionsOrder = [];
             Object.keys(description.options).forEach(function (item, index) {
                 if (description.options[item] != "Pessoa Física") {
-                    // Impede que uma pessoa física crie outra pessoa física
+                    // Linha Mapa da Inovação - Impede que uma pessoa física crie outra pessoa física
                     typeOptions[index] = description.options[item];
                     optionsOrder.push(parseInt(index));
                 }
@@ -58,6 +58,19 @@ app.component("entity-field", {
             (description.type == "text" && description.field_type === undefined)
         ) {
             fieldType = "textarea";
+        }
+
+        // Tratamento especial para campos de galeria/vídeos/downloads
+        if (description.registrationFieldConfiguration?.config?.entityField) {
+            const entityField =
+                description.registrationFieldConfiguration.config.entityField;
+            if (entityField === "@gallery") {
+                fieldType = "gallery";
+            } else if (entityField === "@videos") {
+                fieldType = "videos";
+            } else if (entityField === "@downloads") {
+                fieldType = "downloads";
+            }
         }
 
         if (!description.min) {
@@ -190,6 +203,10 @@ app.component("entity-field", {
             type: Boolean,
             default: false,
         },
+        registrationFieldConfiguration: {
+            type: Object,
+            default: null,
+        },
         titleModal: {
             type: String,
             required: false,
@@ -227,12 +244,15 @@ app.component("entity-field", {
 
     computed: {
         hasErrors() {
-            let errors = this.entity.__validationErrors[this.prop] || [];
-            if (errors.length > 0) {
-                return true;
-            } else {
+            const errors = this.entity.__validationErrors[this.prop] || [];
+
+            // Para campos @location, deixamos a sinalização visual por conta
+            // do componente de endereço, que destaca apenas os subcampos faltando.
+            if (errors.length > 0 && this.is("location")) {
                 return false;
             }
+
+            return errors.length > 0;
         },
         errors() {
             return this.entity.__validationErrors[this.prop];
@@ -242,6 +262,32 @@ app.component("entity-field", {
         },
         entitiesFildTypes() {
             return ["agent-owner-field", "agent-collective-field"];
+        },
+        fileGroupTypes() {
+            return ["@gallery", "@downloads"];
+        },
+        metaListTypes() {
+            return ["@videos", "@links"];
+        },
+        isFileGroup() {
+            let registrationFieldConfiguration =
+                this.description.registrationFieldConfiguration;
+            if (registrationFieldConfiguration?.config?.entityField) {
+                return this.fileGroupTypes().includes(
+                    registrationFieldConfiguration.config.entityField,
+                );
+            }
+            return false;
+        },
+        isMetaList() {
+            let registrationFieldConfiguration =
+                this.description.registrationFieldConfiguration;
+            if (registrationFieldConfiguration?.config?.entityField) {
+                return this.metaListTypes().includes(
+                    registrationFieldConfiguration.config.entityField,
+                );
+            }
+            return false;
         },
     },
 
@@ -423,8 +469,23 @@ app.component("entity-field", {
         is(type) {
             if (type == "location") {
                 let fieldConfig =
-                    this.description.registrationFieldConfiguration.config;
-                return fieldConfig.entityField == "@location";
+                    this.description.registrationFieldConfiguration?.config;
+                return fieldConfig?.entityField == "@location";
+            }
+            if (type == "gallery") {
+                let fieldConfig =
+                    this.description.registrationFieldConfiguration?.config;
+                return fieldConfig?.entityField == "@gallery";
+            }
+            if (type == "videos") {
+                let fieldConfig =
+                    this.description.registrationFieldConfiguration?.config;
+                return fieldConfig?.entityField == "@videos";
+            }
+            if (type == "downloads") {
+                let fieldConfig =
+                    this.description.registrationFieldConfiguration?.config;
+                return fieldConfig?.entityField == "@downloads";
             }
             return this.fieldType == type;
         },
