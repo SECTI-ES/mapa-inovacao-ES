@@ -2,7 +2,7 @@
 $process_assets = env('ASSETS_PROCESS');
 
 return [
-    'themes.assetManager' => new \MapasCulturais\AssetManagers\FileSystem([
+    'themes.assetManager' => [
         'publishPath' => BASE_PATH . 'assets/',
 
         'mergeScripts' => $process_assets,
@@ -17,5 +17,5 @@ return [
                 'uglifycss {IN} > {OUT}',
 
         'publishFolderCommand' => 'cp -R {IN} {PUBLISH_PATH}{FILENAME}'
-    ]),
+    ],
 ];

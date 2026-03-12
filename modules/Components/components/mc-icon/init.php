@@ -1,6 +1,10 @@
 <?php
 // https://icon-sets.iconify.design/
 $iconset = [
+    // minc -- descomentar os ícones que forem aceitos na biblioteca Iconify
+    'cultura-viva-1' => 'bi:person-arms-up',//'minc:cultura-viva-1',
+    'cultura-viva-3' => 'ph:person-arms-spread-fill',//'minc:cultura-viva-3',
+
     // entidades
     'app' => 'heroicons-solid:puzzle',
     'user' => 'fa-solid:user-friends',
@@ -12,6 +16,7 @@ $iconset = [
     'event' => 'bxs:calendar-event',
     'project' => 'ri:file-list-2-fill',
     'opportunity' => 'mdi:lightbulb-on',
+    'seal' => 'mdi:seal-variant',
 
     // redes sociais
     'facebook' => 'brandico:facebook',
@@ -40,6 +45,8 @@ $iconset = [
     'arrow-down' => 'akar-icons:arrow-down',
     'arrow-left-ios' => 'material-symbols:arrow-back-ios',
     'arrow-left' => 'akar-icons:arrow-left',
+    'arrow-left-return' => 'la:long-arrow-alt-left',
+    'arrow-right-return' => 'la:long-arrow-alt-right',
     'arrow-right-ios' => 'material-symbols:arrow-forward-ios',
     'arrow-right' => 'akar-icons:arrow-right',
     'arrow-up' => 'akar-icons:arrow-up',
@@ -51,6 +58,7 @@ $iconset = [
     'brPhone' => 'mdi:phone',
     'check' => 'material-symbols:check-circle',
     'checkbox' => 'tabler:checkbox',
+    'change' => 'basil:exchange-outline',
     'circle' => 'material-symbols:circle',
     'circle-checked' => 'material-symbols:check-circle-rounded',
     'clock' => 'fluent:clipboard-clock-20-filled',
@@ -107,8 +115,8 @@ $iconset = [
     'projects' => 'ri:file-list-2-line',
     'process' => 'fluent-mdl2:processing-pause',
     'question' => 'fe:question',
+    'required' => 'fontisto:asterisk',
     'role'  => 'ri:profile-line',
-    'seal' => 'mdi:seal-variant',
     'select' => 'octicon:single-select-24',
     'search' => 'ant-design:search-outlined',
     'selected' => 'grommet-icons:radial-selected',

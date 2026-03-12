@@ -11,7 +11,8 @@ $this->import('
     complaint-suggestion
     entity-actions
     entity-admins
-    entity-card 
+    entity-card
+    entity-data
     entity-files-list
     entity-gallery
     entity-gallery-video
@@ -35,13 +36,13 @@ $this->import('
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Meus Projetos');
     $url = $app->createUrl('panel', 'projects');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Projetos');
     $url = $app->createUrl('search', 'projects');
 }
@@ -67,9 +68,8 @@ if($children_id ){
     <entity-header :entity="entity">
         <template #metadata>
             <dl v-if="entity.id && global.showIds[entity.__objectType]" class="metadata__id">
-                <dt class="metadata__id--id"><?= i::__('ID') ?></dt>
-                <dd><strong>{{entity.id}}</strong></dd>
-            </dl> 
+                <entity-data class="metadata__id" :entity="entity" prop="id" label="<?php i::_e("ID:")?>"></entity-data>
+            </dl>
             <dl v-if="entity.type">
                 <dt><?= i::__('Tipo') ?></dt>
                 <dd :class="[entity.__objectType+'__color', 'type']"> {{entity.type.name}} </dd>
@@ -89,21 +89,11 @@ if($children_id ){
                         <div class="grid-12">
                             <div v-if="entity.emailPublico || entity.telefonePublico" class="col-12 additional-info">
                                 <h4 class="additional-info__title"><?php i::_e("Informações adicionais"); ?></h4>
-
-                                <div v-if="entity.telefonePublico" class="additional-info__item">
-                                    <p class="additional-info__item__title"><?php i::_e("telefone:"); ?></p>
-                                    <p class="additional-info__item__content">{{entity.telefonePublico}}</p>
-                                </div>  
-
-                                <div v-if="entity.emailPublico" class="additional-info__item">
-                                    <p class="additional-info__item__title"><?php i::_e("email:"); ?></p>
-                                    <p class="additional-info__item__content">{{entity.emailPublico}}</p>
-                                </div>
+                                <entity-data v-if="entity.telefonePublico" class="additional-info__item" :entity="entity" prop="telefonePublico" label="<?php i::_e("telefone:")?>"></entity-data>
+                                <entity-data v-if="entity.emailPublico" class="additional-info__item" :entity="entity" prop="emailPublico" label="<?php i::_e("email:")?>"></entity-data>
                             </div>
                             <div v-if="entity.longDescription!=null" class="col-12">
-                                <h2><?php i::_e('Descrição Detalhada'); ?></h2>
-                                <p class="description" v-html="entity.longDescription"></p>
-
+                                <entity-data v-if="entity.longDescription!=null" class="additional-info__item col-12" :entity="entity" prop="longDescription" label="<?php i::_e("Descrição Detalhada")?>"></entity-data>
                             </div>
                             <entity-files-list v-if="entity.files.downloads!= null" :entity="entity" classes="col-12" group="downloads" title="<?php i::esc_attr_e('Arquivos para download'); ?>"></entity-files-list>
                             <entity-links :entity="entity" classes="col-12" title="<?php i::_e('Links'); ?>"></entity-links>
@@ -141,14 +131,14 @@ if($children_id ){
                                     <template #avatar>
                                         <mc-avatar :entity="entity" size="medium"></mc-avatar>
                                     </template>
-                                    <template #type> 
-                                        <span> 
-                                            <?= i::__('TIPO: ') ?> 
+                                    <template #type>
+                                        <span>
+                                            <?= i::__('TIPO: ') ?>
                                             <span :class="['upper', entity.__objectType+'__color']">{{entity.type.name}}</span>
                                         </span>
                                     </template>
                                 </entity-card>
-                            </template>                                
+                            </template>
                         </mc-entities>
 
                         <div v-if="!entity.children" class="single-project__not-found">

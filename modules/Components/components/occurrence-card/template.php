@@ -8,7 +8,7 @@ use MapasCulturais\i;
 
 $this->import('
     mc-avatar
-    mc-icon 
+    mc-icon
     mc-link
     mc-title
 ');
@@ -35,7 +35,7 @@ $this->import('
 
     <div class="entity-card__content">
         <div class="entity-card__content--occurrence-data">
-            {{occurrence.starts.date('long')}} <?= i::_e('às') ?> {{occurrence.starts.time()}}
+            <mc-icon name="event"></mc-icon> {{occurrence.starts.date('long')}} <?= i::_e('às') ?> {{occurrence.starts.time()}}
         </div>
         <div v-if="!hideSpace" class="entity-card__content--occurrence-space">
             <div class="link"><mc-icon class="link space__color" name="pin"></mc-icon></div>
@@ -80,7 +80,7 @@ $this->import('
                 <label class="seals__title">
                     <?php i::_e('Selos') ?> ({{event.seals.length}}):
                 </label>
-                <div v-for="seal in seals" class="seals__seal"></div>
+                <div v-for="seal in seals" class="seals__seal" v-tooltip="seal.name"></div>
                 <div v-if="seals.length == 2" class="seals__seal more">+1</div>
             </div>
         </div>

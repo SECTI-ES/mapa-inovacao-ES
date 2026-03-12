@@ -8,6 +8,7 @@ $this->layout = 'entity';
 
 $this->import('
     agent-data-1
+    country-address-view
     complaint-suggestion
     entity-actions
     entity-admins
@@ -17,7 +18,6 @@ $this->import('
     entity-header
     entity-links
     entity-list
-    entity-location
     entity-owner
     entity-related-agents
     entity-seals
@@ -34,13 +34,13 @@ $this->import('
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Meus Agentes');
     $url = $app->createUrl('panel', 'agents');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Agentes');
     $url = $app->createUrl('search', 'agents');
 }
@@ -61,9 +61,9 @@ $this->breadcrumb = [
                     <opportunity-list></opportunity-list>
                     <div class="grid-12 col-12">
                         <agent-data-1 :entity="entity"></agent-data-1>
-                        <entity-location :entity="entity" classes="col-12"></entity-location>
+                        <country-address-view v-if="entity.publicLocation" :entity="entity" class="col-12"></country-address-view>
                         <div v-if="entity.longDescription" class="col-12">
-                            <span>   
+                            <span>
                                 <h3 class="single-1__description bold"><?php i::_e('Descrição Detalhada');?></h3>
                             </span>
                             <p class="description" v-html="entity.longDescription"></p>
@@ -77,7 +77,7 @@ $this->breadcrumb = [
                             <entity-list v-if="entity.spaces?.length>0" title="<?php i::esc_attr_e('Espaços');?>" type="space" :ids="entity.spaces"></entity-list>
                             <entity-list v-if="entity.events?.length>0" title="<?php i::esc_attr_e('Eventos');?>" type="event" :ids="entity.events"></entity-list>
                             <entity-list v-if="entity.children?.length>0" title="<?php i::esc_attr_e('Agentes');?>" type="agent" :ids="entity.children"></entity-list>
-                            <entity-list v-if="entity.projects?.length>0" title="<?php i::esc_attr_e('Projetos');?>" type="project" :ids="entity.projects"></entity-list>                                
+                            <entity-list v-if="entity.projects?.length>0" title="<?php i::esc_attr_e('Projetos');?>" type="project" :ids="entity.projects"></entity-list>
                         </div>
                         <complaint-suggestion :entity="entity" classes="col-12"></complaint-suggestion>
                     </div>
@@ -87,7 +87,7 @@ $this->breadcrumb = [
                         <?php $this->applyTemplateHook('single1-entity-info-taxonomie-area','before') ?>
                         <entity-terms :entity="entity" hide-required classes="col-12" taxonomy="area" title="<?php i::esc_attr_e('Áreas de atuação');?>"></entity-terms>
                         <?php $this->applyTemplateHook('single1-entity-info-taxonomie-area','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-taxonomie-funcao','before') ?>
                         <entity-terms :entity="entity" hide-required taxonomy="funcao" classes="col-12" title="<?php i::_e('Funções'); ?>"></entity-terms>
                         <?php $this->applyTemplateHook('single1-entity-info-taxonomie-funcao','after') ?>
@@ -95,27 +95,27 @@ $this->breadcrumb = [
                         <?php $this->applyTemplateHook('single1-entity-info-social-media','before') ?>
                         <entity-social-media :entity="entity" classes="col-12"></entity-social-media>
                         <?php $this->applyTemplateHook('single1-entity-info-social-media','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-entity-seals','before') ?>
                         <entity-seals :entity="entity" :editable="entity.currentUserPermissions?.createSealRelation" classes="col-12" title="<?php i::esc_attr_e('Verificações');?>"></entity-seals>
                         <?php $this->applyTemplateHook('single1-entity-info-entity-seals','after') ?>
 
                         <?php $this->applyTemplateHook('single1-entity-info-entity-related-agents','before') ?>
-                        <entity-related-agents :entity="entity" classes="col-12" title="<?php i::esc_attr_e('Agentes Relacionados');?>"></entity-related-agents> 
+                        <entity-related-agents :entity="entity" classes="col-12" title="<?php i::esc_attr_e('Agentes Relacionados');?>"></entity-related-agents>
                         <?php $this->applyTemplateHook('single1-entity-info-entity-related-agents','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-entity-terms-tag','before') ?>
                         <entity-terms :entity="entity" hide-required classes="col-12" taxonomy="tag" title="<?php i::esc_attr_e('Tags') ?>"></entity-terms>
                         <?php $this->applyTemplateHook('single1-entity-info-entity-terms-tag','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-mc-share-links','before') ?>
                         <mc-share-links  classes="col-12" title="<?php i::esc_attr_e('Compartilhar');?>" text="<?php i::esc_attr_e('Veja este link:');?>"></mc-share-links>
                         <?php $this->applyTemplateHook('single1-entity-info-mc-share-links','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-entity-admins','before') ?>
                         <entity-admins :entity="entity" classes="col-12"></entity-admins>
                         <?php $this->applyTemplateHook('single1-entity-info-entity-admins','after') ?>
-                        
+
                         <?php $this->applyTemplateHook('single1-entity-info-entity-owner','before') ?>
                         <entity-owner classes="col-12"  title="<?php i::esc_attr_e('Publicado por');?>" :entity="entity"></entity-owner>
                         <?php $this->applyTemplateHook('single1-entity-info-entity-owner','after') ?>
@@ -123,7 +123,7 @@ $this->breadcrumb = [
                     </div>
                 </aside>
             </mc-container>
-        </mc-tab>    
-    </mc-tabs>   
-    <entity-actions :entity="entity"></entity-actions>         
+        </mc-tab>
+    </mc-tabs>
+    <entity-actions :entity="entity"></entity-actions>
 </div>

@@ -24,18 +24,18 @@ $this->import('
     opportunity-subscribe-results
 ');
 
-$this->addOpportunityPhasesToJs();
+$this->addOpportunityPhasesToJs($entity);
 
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
-    
+
     $label = i::__('Minhas oportunidades');
     $url = $app->createUrl('panel', 'opportunities');
 } else {
     $label_init = i::__('Inicio');
     $url_init = $app->createUrl('site', 'index');
-    
+
     $label = i::__('Oportunidades');
     $url = $app->createUrl('search', 'opportunities');
 }
@@ -56,7 +56,7 @@ $this->breadcrumb = [
             <opportunity-basic-info :entity="entity"></opportunity-basic-info>
         </mc-tab>
         <mc-tab label="<?= i::__('Configuração de fases') ?>" slug="config">
-            <opportunity-phases-config :entity="entity" tabs='config'></opportunity-phases-config>
+            <opportunity-phases-config :entity="entity" tab="config"></opportunity-phases-config>
         </mc-tab>
         <mc-tab label="<?= i::__('Inscrições e Resultados') ?>" slug="registrations">
             <opportunity-subscribe-results :entity="entity" tab="registrations"></opportunity-subscribe-results>
@@ -66,6 +66,6 @@ $this->breadcrumb = [
         </mc-tab>
         <?php $this->applyTemplateHook('tabs','end') ?>
     </mc-tabs>
-    
+
     <entity-actions :entity="entity" editable></entity-actions>
 </div>

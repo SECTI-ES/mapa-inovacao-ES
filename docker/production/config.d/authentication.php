@@ -9,7 +9,7 @@ $_APP_BASE_URL = $prot_part . $host_part;
 return [
     'auth.provider' => '\MultipleLocalAuth\Provider',
     'auth.config' => array(
-        
+
         'urlSupportEmail' => 'mailto:seedes@secti.es.gov.br',
 
         'salt' => env('AUTH_SALT', null),
