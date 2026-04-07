@@ -96,7 +96,7 @@ $this->import('
 
 			<div v-if="linguagens" class="entity-card__content--terms-linguagem">
 				<label class="linguagem__title">
-					<?php i::_e('tipos:') ?> ({{entity.terms.linguagem.length}}):
+					<?php i::_e('tipos:') ?> ({{entity.terms.linguagem.length}}):  <!-- Mapa Inovação: correção de domínio -->
 				</label>
 				<p :class="['terms', entity.__objectType+'__color']"> {{linguagens}} </p>
 			</div>
