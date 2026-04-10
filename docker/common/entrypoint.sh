@@ -55,18 +55,15 @@ sudo -E -u www-data /var/www/scripts/db-update.sh
 sudo -E -u www-data /var/www/scripts/mc-db-updates.sh
 
 # ==============================================================================
-# 4. COMPILAÇÃO CONDICIONAL (Versão/Assets)
+# 4. COMPILAÇÃO
 # ==============================================================================
-if ! cmp /var/www/version.txt /var/www/var/private-files/deployment-version >/dev/null 2>&1
-then
-    echo "⚙️ [Mapas] Versão alterada. Recompilando SASS e Proxies..."
-    sudo -E -u www-data /var/www/scripts/compile-sass.sh
-    sudo -E -u www-data /var/www/src/tools/doctrine orm:generate-proxies
+echo "⚙️ [Mapas] Compilando SASS e Proxies..."
+sudo -E -u www-data /var/www/scripts/compile-sass.sh
+sudo -E -u www-data /var/www/src/tools/doctrine orm:generate-proxies
 
-    # Verifica se a pasta destino existe antes de copiar
-    mkdir -p /var/www/var/private-files/
-    cp /var/www/version.txt /var/www/var/private-files/deployment-version
-fi
+# Verifica se a pasta destino existe antes de copiar
+mkdir -p /var/www/var/private-files/
+cp /var/www/version.txt /var/www/var/private-files/deployment-version
 
 if [ "$BUILD_ASSETS" = "1" ]; then
     echo "📦 [Mapas] BUILD_ASSETS=1 detectado. Instalando dependências JS..."
