@@ -65,15 +65,26 @@ sudo -E -u www-data /var/www/src/tools/doctrine orm:generate-proxies
 mkdir -p /var/www/var/private-files/
 cp /var/www/version.txt /var/www/var/private-files/deployment-version
 
-if [ "$BUILD_ASSETS" = "1" ]; then
-    echo "📦 [Mapas] BUILD_ASSETS=1 detectado. Instalando dependências JS..."
-    chown -R www-data:www-data /var/www/public/assets/
-    cd /var/www/src
-    # Adicionado --ignore-scripts para segurança se necessário, ou mantenha normal
-    pnpm install --recursive
+
+echo "⚙️ [Mapas] Atualizando e instalando libs composer..."
+sh /var/www/composer.sh
+
+echo "⚙️ [Mapas] Compilando PNPM..."
+chown -R www-data:www-data /var/www/public/assets/
+
+cd /var/www/src
+
+pnpm store prune
+pnpm install --recursive
+
+if [ "$APP_MODE" = "production" ]; then
+    echo "🚀 [Mapas] APP_MODE=production detectado. Compilando para produção..."
+    pnpm run build
+else
+    echo "⚡ [Mapas] APP_MODE=development detectado. Compilando para desenvolvimento..."
     pnpm run dev
-    cd / # Volta para raiz para segurança
 fi
+cd / # Volta para raiz para segurança
 
 # ==============================================================================
 # 5. CRONS E PROCESSO PRINCIPAL

@@ -9,7 +9,7 @@ COPY modules /var/www/src/modules
 
 COPY docker/common/config.d /var/www/config/common.d
 COPY docker/production/config.d /var/www/config/config.d
-COPY docker/production/composer.json /var/www/composer.json
+COPY docker/common/composer.sh /var/www/composer.sh
 COPY docker/common/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
 COPY docker/common/php-ini.d /usr/local/etc/php/conf.d
 COPY em-breve /var/www/html/em-breve
