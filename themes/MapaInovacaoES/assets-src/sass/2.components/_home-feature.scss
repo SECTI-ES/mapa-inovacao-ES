@@ -1,73 +1,86 @@
 .home-feature {
-	&__header {
-		color: var(--mc-high-500);
-	}
-	
-	&__content {
-		&.cards {
-			.semibold{
-				color: var(--mc-high-500);
-			}
+    &__header {
+        color: var(--mc-high-500);
+    }
 
-			.tabs-component{
-				&__header{
-					color: var(--mc-high-500);
-				}
+    &__content {
+        &.cards {
+            .semibold {
+                color: var(--mc-high-500);
+            }
 
-				&__button--active::after{
-					background-color: var(--mc-high-500);
-				}
-			}
+            .tabs-component {
+                &__header {
+                    color: var(--mc-high-500);
+                }
 
-			.actions {
-				width: 110%;
-				display: flex;
-				justify-content: space-between;
-				position: absolute;
-				left: size(-60);
-				top: calc(50% - size(24));
-	
-				@media (max-width: size(1300)) {
-					display: none;
-				}
-			}
-			.carousel {
-				&__viewport {
-					ol {
-						li{
-							.entity-card.portrait {
-								height: size(620);
+                &__button--active::after {
+                    background-color: var(--mc-high-500);
+                }
+            }
 
-								.entity-card__header{
-									&.user-slot {
-										position: absolute;
-										top: size(8);
-										right: size(8);
-									}
-								}
-								.entity-card__content{
-									.terms{
-										max-height: size(50);
-										overflow: hidden;
-										word-break: break-word;
-									}
-									.entity-card__content--terms-tag{
-										max-height: size(75);
-										overflow: hidden;
-										word-break: break-word;
-									}
-								}
-							}
-						}
-					}
-					.entity-card__footer {
-						flex-direction: column;
-						position: absolute;
-						bottom: size(16);
-					}
-				}
-			}
-		}
-	
-	}	
+            .actions {
+                width: 110%;
+                display: flex;
+                justify-content: space-between;
+                position: absolute;
+                left: size(-60);
+                top: calc(50% - size(24));
+
+                @media (max-width: size(1300)) {
+                    display: none;
+                }
+            }
+
+            .carousel {
+                &__viewport {
+                    ol {
+                        li {
+                            .entity-card.portrait {
+                                display: flex;
+                                flex-direction: column;
+                                height: size(620);
+
+                                .entity-card__header {
+                                    &.user-slot {
+                                        position: absolute;
+                                        top: size(8);
+                                        right: size(8);
+                                        z-index: 1; // Garante que fique acima
+                                    }
+                                }
+
+                                .entity-card__content {
+                                    flex: 1; // Ocupa espaço disponível
+                                    overflow-y: auto; // Scroll se necessário
+                                    padding: size(16);
+
+                                    .terms,
+                                    .entity-card__content--terms-tag {
+                                        max-height: size(50);
+                                        overflow: hidden;
+                                        word-break: break-word;
+                                    }
+
+                                    .entity-card__content--terms-tag {
+                                        max-height: size(75);
+                                    }
+                                }
+
+                                .entity-card__footer {
+                                    flex-direction: column;
+                                    margin-top: auto; // Empurra para baixo
+                                    padding: size(16);
+                                    background-color: var(
+                                        --mc-card-bg
+                                    ); // Fundo sólido
+                                    border-radius: 0 0 size(8) size(8);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -69,6 +69,7 @@ services:
     environment:
       - REDIS_CACHE=redis
       - SESSIONS_SAVE_PATH=tcp://sessions:6379
+      - APP_MODE=production
 
     depends_on:
       #- db

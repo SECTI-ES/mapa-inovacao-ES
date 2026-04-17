@@ -55,28 +55,36 @@ sudo -E -u www-data /var/www/scripts/db-update.sh
 sudo -E -u www-data /var/www/scripts/mc-db-updates.sh
 
 # ==============================================================================
-# 4. COMPILAÇÃO CONDICIONAL (Versão/Assets)
+# 4. COMPILAÇÃO
 # ==============================================================================
-if ! cmp /var/www/version.txt /var/www/var/private-files/deployment-version >/dev/null 2>&1
-then
-    echo "⚙️ [Mapas] Versão alterada. Recompilando SASS e Proxies..."
-    sudo -E -u www-data /var/www/scripts/compile-sass.sh
-    sudo -E -u www-data /var/www/src/tools/doctrine orm:generate-proxies
+echo "⚙️ [Mapas] Compilando SASS e Proxies..."
+sudo -E -u www-data /var/www/scripts/compile-sass.sh
+sudo -E -u www-data /var/www/src/tools/doctrine orm:generate-proxies
 
-    # Verifica se a pasta destino existe antes de copiar
-    mkdir -p /var/www/var/private-files/
-    cp /var/www/version.txt /var/www/var/private-files/deployment-version
-fi
+# Verifica se a pasta destino existe antes de copiar
+mkdir -p /var/www/var/private-files/
+cp /var/www/version.txt /var/www/var/private-files/deployment-version
 
-if [ "$BUILD_ASSETS" = "1" ]; then
-    echo "📦 [Mapas] BUILD_ASSETS=1 detectado. Instalando dependências JS..."
-    chown -R www-data:www-data /var/www/public/assets/
-    cd /var/www/src
-    # Adicionado --ignore-scripts para segurança se necessário, ou mantenha normal
-    pnpm install --recursive
+
+echo "⚙️ [Mapas] Atualizando e instalando libs composer..."
+sh /var/www/composer.sh
+
+echo "⚙️ [Mapas] Compilando PNPM..."
+chown -R www-data:www-data /var/www/public/assets/
+
+cd /var/www/src
+
+pnpm store prune
+pnpm install --recursive
+
+if [ "$APP_MODE" = "production" ]; then
+    echo "🚀 [Mapas] APP_MODE=production detectado. Compilando para produção..."
+    pnpm run build
+else
+    echo "⚡ [Mapas] APP_MODE=development detectado. Compilando para desenvolvimento..."
     pnpm run dev
-    cd / # Volta para raiz para segurança
 fi
+cd / # Volta para raiz para segurança
 
 # ==============================================================================
 # 5. CRONS E PROCESSO PRINCIPAL
