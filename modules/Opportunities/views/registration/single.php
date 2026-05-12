@@ -171,7 +171,7 @@ $today = new DateTime();
                             </span>
                             <span class="info" v-if="entity.agentsData.owner?.dataDeNascimento">
                                 <strong> <?= i::__('Data de nascimento ou fundação') ?>: </strong>
-                                <span>{{entity.agentsData.owner?.dataDeNascimento}}</span><!-- .date('2-digit year') -->
+                                <span>{{entity.agentsData.owner?.dataDeNascimento.split('-').reverse().join('/')}}</span>
                             </span>
                             <span class="info" v-if="entity.agentsData.owner?.emailPublico">
                                 <strong> <?= i::__('Email') ?>: </strong>
@@ -328,6 +328,35 @@ $today = new DateTime();
 
                         <?php endif ?>
                     <?php endif ?>
+                    <?php if ($appeal_phase = $opportunity->appealPhase): ?>
+                        <?php $appeal_registration = $app->repo('Registration')->findOneBy(['opportunity' => $appeal_phase, 'number' => $entity->number]); ?>
+                        <?php if ($appeal_registration && $appeal_registration->canUser('view')): ?>
+                            <div class="registration-appeal-phase">
+                                <h2><?= $appeal_phase->name ?> <span class="appeal-badge"><?= i::__('Recurso') ?></span></h2>
+                                <?php if($appeal_registration->status === 0):?>
+                                    <?php if($today > $appeal_phase->registrationTo):?>
+                                        <mc-alert type="warning">
+                                            <?= i::__("Você não enviou o formulário desta fase") ?> <br>
+                                            <small><?= i::__("O prazo para envio dessa inscrição foi até {$appeal_phase->registrationTo->format('d/m/Y H:i:s')}") ?></small> <br>
+                                        </mc-alert>
+                                    <?php else: ?>
+                                        <mc-alert type="warning">
+                                            <?= i::__("Você não enviou o formulário desta fase") ?> <br>
+                                        </mc-alert>
+                                        <div class="grid-12">
+                                            <div class="col-3 sm:col-12">
+                                                <a class="button button--primary" href="<?=$app->createUrl("registration", "edit", [$appeal_registration->id])?>"><?= i::__('Acessar formulário') ?></a>
+                                            </div>
+                                        </div>
+                                    <?php endif ?>
+                                <?php else: ?>
+                                    <?php $this->applyTemplateHook("registration-appeal-phase-form-view", 'before', [$appeal_registration]) ?>
+                                    <v1-embed-tool route="registrationview" :id="<?=$appeal_registration->id?>"></v1-embed-tool>
+                                    <?php $this->applyTemplateHook("registration-appeal-phase-form-view", 'after', [$appeal_registration]) ?>
+                                <?php endif ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
                     <?php $phase = $phase->nextPhase; ?>
                 <?php endwhile ?>
             </div>
@@ -336,20 +365,33 @@ $today = new DateTime();
         <mc-tab v-if="entity.opportunity.currentUserPermissions['@control']" label="<?= i::_e('Avaliadores') ?>" slug="valuers">
             <div class="registration__content">
                 <mc-tabs>
-                <?php $phase = $entity;
-                    while($phase):
-                        if (!($emc = $phase->opportunity->evaluationMethodConfiguration)) {
-                            $phase = $phase->nextPhase;
-                            continue;
-                        }
+                <?php
+                $phase = $entity;
+                while ($phase):
+                    $opp = $phase->opportunity;
+                    $emc = $opp->evaluationMethodConfiguration ?? null;
+                    if ($emc):
                         ?>
-                        <mc-tab label="<?= htmlspecialchars($emc->name) ?>" slug="valuers-<?= $phase->opportunity->id ?>">
+                        <mc-tab label="<?= htmlspecialchars($emc->name) ?>" slug="valuers-<?= $opp->id ?>">
                             <mc-card>
-                                <registration-evaluation-tab :phase-id="<?= $phase->opportunity->id ?>"></registration-evaluation-tab>
+                                <registration-evaluation-tab :phase-id="<?= (int) $opp->id ?>"></registration-evaluation-tab>
                             </mc-card>
                         </mc-tab>
-                    <?php $phase = $phase->nextPhase;
-                    endwhile ?>
+                    <?php
+                    endif;
+                    $appeal_opp = $opp->appealPhase ?? null;
+                    if ($appeal_opp && ($appeal_emc = $appeal_opp->evaluationMethodConfiguration ?? null)):
+                        ?>
+                        <mc-tab label="<?= htmlspecialchars($appeal_emc->name) ?>" slug="valuers-<?= $appeal_opp->id ?>">
+                            <mc-card>
+                                <registration-evaluation-tab :phase-id="<?= (int) $appeal_opp->id ?>"></registration-evaluation-tab>
+                            </mc-card>
+                        </mc-tab>
+                    <?php
+                    endif;
+                    $phase = $phase->nextPhase;
+                endwhile;
+                ?>
                 </mc-tabs>
             </div>
         </mc-tab>
@@ -357,3 +399,24 @@ $today = new DateTime();
         <?php $this->applyTemplateHook('single-tab', 'end') ?>
     </mc-tabs>
 </div>
+
+<style>
+.registration-appeal-phase {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px dashed var(--mc-gray-300);
+}
+
+.appeal-badge {
+    display: inline-block;
+    background-color: var(--mc-warning-500, #f59e0b);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+</style>
