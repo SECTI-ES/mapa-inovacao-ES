@@ -10,9 +10,9 @@
     height: 60%;
 }
 
-.panel-nav a{
-    &:focus, 
-    &:hover, 
+.panel-nav a {
+    &:focus,
+    &:hover,
     &.active {
         .own {
             filter: invert(0%);
@@ -20,28 +20,29 @@
     }
 }
 
-.main-footer__content, .panel-nav{
+.main-footer__content,
+.panel-nav {
     .own {
         height: 18px;
         filter: invert(100%);
     }
 }
 
-.panel--entities-summary__card--header-icon{
-    .iconify{
+.panel--entities-summary__card--header-icon {
+    .iconify {
         color: var(--mc-white);
     }
 }
 
-.mc-avatar{
-    &--big.mc-avatar--icon.mc-avatar{
-        .own{
+.mc-avatar {
+    &--big.mc-avatar--icon.mc-avatar {
+        .own {
             height: 50%;
         }
     }
 
     &--medium.mc-avatar--icon.mc-avatar {
-        .iconify{
+        .iconify {
             color: var(--mc-white);
             height: 100%;
             width: 55%;
@@ -49,32 +50,39 @@
     }
 }
 
-.entity-card__header.user-slot{
-    width: 45%;
+.entity-card {
+    &__header.user-slot {
+        width: 45%;
 
-    .entityType{
-        color: var(--mc-white);
+        .entityType {
+            color: var(--mc-white);
+        }
+        .own {
+            width: 14%;
+        }
     }
-    .own{
-        width: 14%;
+
+    &__content--occurrence-data {
+        .own {
+            width: 18px;
+            filter: invert(100%);
+        }
     }
 }
 
-.panel-entity-card__header-actions{
-
+.panel-entity-card__header-actions {
     height: 13%;
 
     .card-actions--tag {
-
         display: flex;
         justify-content: space-around;
         align-items: center;
 
-        .own{
+        .own {
             max-width: 26px;
         }
 
-        span{
+        span {
             color: var(--mc-white);
         }
     }
