@@ -60,9 +60,11 @@ if($this->isRequestedEntityMine()){
 $this->breadcrumb = [
     ['label' => $label_init, 'url' => $url_init],
     ['label' => $label, 'url' => $url],
-    ['label' => $entity->name, 'url' => $app->createUrl('opportunity', 'single', [$entity->id])],
+  ['label' => $entity->name, 'url' => $app->createUrl('opportunity', 'single', [$entity->id])],
 ];
 ?>
+<!-- Mapa Inovação: correção dos Breadcrumbs -->
+
 <div class="main-app single single-opportunity">
   <mc-breadcrumb></mc-breadcrumb>
   <entity-header :entity="entity">

@@ -149,6 +149,10 @@ class Module extends \MapasCulturais\Module{
         });
 
         $app->hook('entity(Opportunity).insert:after', function() {
+            if ($this->isAppealPhase) {
+                return;
+            }
+
             if ($this->registrationSteps && count($this->registrationSteps) > 0) {
                 return;
             }
@@ -267,6 +271,45 @@ class Module extends \MapasCulturais\Module{
         $app->hook("entity(EvaluationMethodConfiguration).meta(<<{$_metadata_list}>>).<<insert|update|delete>>:after", function() use($app) {
             /** @var EvaluationMethodConfigurationMeta $this */
             $this->owner->mustRedistributeCommitteeRegistrations = true;
+        });
+
+        // Validação backend: impede valores negativos em valuersPerRegistration
+        $app->hook('entity(EvaluationMethodConfiguration).save:before', function() {
+            /** @var EvaluationMethodConfiguration $this */
+            if ($this->valuersPerRegistration) {
+                $valuersPerRegistration = $this->valuersPerRegistration;
+                foreach ($valuersPerRegistration as $committee => $value) {
+                    if ((int)$value < 0) {
+                        $valuersPerRegistration->$committee = 0;
+                    }
+                }
+                $this->valuersPerRegistration = $valuersPerRegistration;
+            }
+        });
+
+        // Valida integridade entre seções e critérios na resposta da API
+        $app->hook('entity(EvaluationMethodConfiguration).validationErrors', function(&$errors) {
+            /** @var EvaluationMethodConfiguration $this */
+
+            // Só valida se sections ou criteria foram modificados
+            $has_criteria_changes = $this->getChangedMetadata()['criteria'] ?? false;
+            $has_sections_changes = $this->getChangedMetadata()['sections'] ?? false;
+
+            if (!$has_criteria_changes && !$has_sections_changes) {
+                return;
+            }
+
+            if (!$this->validateCriteriaSectionsIntegrity()) {
+                // Adiciona erro no campo que foi enviado para garantir que apareça na resposta
+                if ($has_criteria_changes) {
+                    $errors['criteria'] = $errors['criteria'] ?? [];
+                    $errors['criteria'][] = i::__('Critérios com erros: existe(m) critério(s) sem seção associada ou com campos obrigatórios vazios');
+                }
+                if ($has_sections_changes) {
+                    $errors['sections'] = $errors['sections'] ?? [];
+                    $errors['sections'][] = i::__('Seções com erros: existe(m) seção(ões) sem critérios associados');
+                }
+            }
         });
 
         $app->hook('entity(EvaluationMethodConfiguration).save:finish', function () use($app, $distribute_execution_time) {
@@ -557,7 +600,7 @@ class Module extends \MapasCulturais\Module{
             if ($is_valuer) {
                 $breadcrumb = [
                     ['label'=> i::__('Painel'), 'url' => $app->createUrl('panel', 'index')],
-                    ['label'=> i::__('Minhas avaliações'), 'url' => $app->createUrl('panel', 'evaluations')], // MapaInovação - Checar esse link
+                    ['label'=> i::__('Minhas avaliações'), 'url' => $app->createUrl('panel', 'evaluations')], // Mapa Inovação: correção dos Breadcrumbs
                     ['label'=> $first_phase->name, 'url' => $app->createUrl('opportunity', 'single', [$first_phase->id])]
                 ];
             } else {
@@ -661,7 +704,10 @@ class Module extends \MapasCulturais\Module{
                 return $a->displayOrder <=> $b->displayOrder;
             });
 
-            $this->jsObject['registrationFields'] = $fields;
+            $this->jsObject['registrationFields'] = array_map(
+                fn ($field) => $field->jsonSerialize(),
+                $fields
+            );
         });
 
         $app->hook('mapas.printJsObject:before', function() use($app) {
@@ -723,9 +769,13 @@ class Module extends \MapasCulturais\Module{
 
                     $evaluations = $this->sentEvaluations;
 
+                    // Verifica se o usuário pode ver os nomes dos avaliadores
+                    $can_view_valuer_names = $opportunity->canUser('@control') ||
+                                              $evaluation_configuration->publishValuerNames;
+
                     foreach($evaluations as $eval) {
                         $detail = $em->getEvaluationDetails($eval);
-                        if ($evaluation_configuration->publishValuerNames){
+                        if ($can_view_valuer_names){
                             $detail['valuer'] = $eval->user->profile->simplify('id,name,singleUrl');
                         }
                         $data['evaluationsDetails'][] = $detail;

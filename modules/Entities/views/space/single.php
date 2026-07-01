@@ -3,7 +3,6 @@
 // ISSUE: links dos Breadcrumbs
 
 use MapasCulturais\i;
-
 $this->layout = 'entity';
 
 $this->import('
@@ -26,6 +25,7 @@ $this->import('
     mc-breadcrumb
     mc-container
     mc-share-links
+    search-list-event
     space-info
     mc-tab
     mc-tabs
@@ -51,6 +51,7 @@ $this->breadcrumb = [
     ['label' => $entity->name, 'url' => $app->createUrl('space', 'single', [$entity->id])],
 ];
 ?>
+<!-- Mapa Inovação: correção dos Breadcrumbs -->
 
 <div class="main-app">
     <mc-breadcrumb></mc-breadcrumb>
@@ -114,6 +115,21 @@ $this->breadcrumb = [
                 </mc-container>
             </div>
         </mc-tab>
+        <?php if($entity->eventOccurrences && $entity->eventOccurrences->count()): ?>
+        <mc-tab icon="event" label="<?= i::_e('Eventos') ?>" slug="eventos">
+            <div class="search__tabs--list">
+                <search-list-event
+                    :pseudo-query='<?= json_encode([
+                        "space:id" => $entity->id,
+                        "@from" => date("Y-m-d"),
+                        "@to" => date("Y") . "-12-31"
+                    ]) ?>'
+                    select="id,name,subTitle,files.avatar,seals,terms,classificacaoEtaria,singleUrl"
+                    space-select="id,name,endereco,files.avatar,singleUrl"
+                />
+            </div>
+        </mc-tab>
+        <?php endif; ?>
         <?php $this->applyTemplateHook('tabs','end') ?>
     </mc-tabs>
     <entity-actions :entity="entity"></entity-actions>

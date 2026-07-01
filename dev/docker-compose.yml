@@ -51,7 +51,7 @@ services:
 
   db:
     container_name: db-mapas
-    image: postgis/postgis:16-master
+    image: postgis/postgis:14-3.4
     environment:
       - POSTGRES_PASSWORD=mapas
       - POSTGRES_USER=mapas
