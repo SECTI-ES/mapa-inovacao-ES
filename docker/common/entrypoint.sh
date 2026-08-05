@@ -25,6 +25,7 @@ done
 # ==============================================================================
 echo "📂 [Mapas] Configurando permissões de diretórios..."
 mkdir -p /var/www/var/DoctrineProxies /var/www/var/logs
+mkdir -p /var/www/public/entity-table-columns
 
 # Garante que o arquivo existe antes de mudar permissão
 touch /var/www/var/logs/app.log
@@ -40,6 +41,7 @@ chown -R www-data:www-data /var/www/public/
 chown -R www-data:www-data /var/www/var/private-files/
 chown -R www-data:www-data /var/www/var/sessions/
 chown -R www-data:www-data /var/www/src/themes/
+chmod -R 775 /var/www/public/entity-table-columns
 
 # Permissões padrão para diretórios (755) e arquivos (644)
 find /var/www/public -type d -exec chmod 755 {} \;

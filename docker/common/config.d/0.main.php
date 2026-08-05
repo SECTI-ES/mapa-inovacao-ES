@@ -8,7 +8,7 @@ return [
 
     ex: `Name\Space` (deve existir a classe `\Name\Space\Theme`)
     */
-    'themes.active' => env('ACTIVE_THEME', 'MapaInovacaoES'),
+    'themes.active' => env('ACTIVE_THEME', 'MapaInovacaoES'), /* Linha do Mapa Inovação */
 
 
     /*
@@ -19,10 +19,10 @@ return [
     'base.url' => env('BASE_URL', ''),
 
     /* Nome do site. É utilizado para a formação dos títulos das páginas. */
-    'app.siteName' => env('SITE_NAME', i::__('Mapa da Inovação ES')),
+    'app.siteName' => env('SITE_NAME', i::__('Mapa da Inovação ES')),  /* Linha do Mapa Inovação */
 
     /* Breve descrição do site. É utilizado como texto de compartilhamento da página principal do site. */
-    'app.siteDescription' => env('SITE_DESCRIPTION', i::__('O Mapa de Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado.')),
+    'app.siteDescription' => env('SITE_DESCRIPTION', i::__('O Mapa de Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado.')), /* Linha do Mapa Inovação */
 
     /* Ids dos selos verificadores. Para utilizar múltiplos selos informe os ids separados por vírgula. */
     'app.verifiedSealsIds' => explode(',', env('VERIFIED_SEALS', '1')),
@@ -133,4 +133,6 @@ return [
         '^application/rtf$',
     ]))),
 
+    /* Define o header proxy para o IP */
+    'app.proxyHeader' => env('PROXY_HEADER', ''),
 ];
