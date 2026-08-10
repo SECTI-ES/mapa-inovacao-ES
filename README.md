@@ -4,19 +4,29 @@ Repositório do Mapa de Inovação do Espírito Santo.
 
 Este projeto de baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações refentes ao domínio e escopo do projeto, atendendo agora há programas, eventos e etc relacionados a inovação no estado do Espírito Santo.
 
-A pasta **modules** é um dos maiores diferenciais deste projetos em comparação com os demais que utilizam a imagem docker do <a href="https://github.com/mapasculturais/mapasculturais">mapasculturais</a> como base. Ele sobrescreve os arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
+A pasta **modules** é um dos maiores diferenciais deste projetos em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais) como base. Ele sobrescreve os arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
 
-## Estrutura de arquivos
+## Índice
+
+- [Estrutura do repositório](#estrutura-do-repositório)
+- [Executar](#executar)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Comandos](#comandos)
+  - [Script](#script)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
+
+## Estrutura do repositório
 
 - **.vscode**
-  - **settings.json**: arquivo com configurações básicas da IDE VSCode.
+  - **settings.json**: arquivo com configurações básicas da IDE VSCode
 
 - **conf**
-  - **csv**: pasta com arquivos csv que armazenam areas de atuação de ocupação definidas pelo governo federal.
-  - **\*-types e taxonomies**: arquivos de definição/configuração dos tipos das entidades, necessário devido mudança de domínio do sistema.
+  - **csv**: pasta com arquivos csv que armazenam areas de atuação de ocupação definidas pelo governo federal
+  - **\*-types e taxonomies**: arquivos de definição/configuração dos tipos das entidades, necessário devido mudança de domínio do sistema
 
 - **db**
-  - **dump**: arquivo de dump sql padrão.
+  - **dump**: arquivo de dump sql padrão
 
 - **docker**
   - **common** - arquivos comuns dos ambientes de desenvolvimento e produção
@@ -31,19 +41,21 @@ A pasta **modules** é um dos maiores diferenciais deste projetos em comparaçã
   - **\*** - arquivos usados para indicar que o site esta em manutenção
 
 - **modules**
-  - **\*** - arquivos a serem sobrescritos para ajustar o sistema ao novo domínio e/ou corrigir erros do sistema base. Alguns apenas atualizam os nomes das entidades no novo domínio, outros corrigem links do breadcrumb, etc.
+  - **\*** - arquivos a serem sobrescritos para ajustar o sistema ao novo domínio e/ou corrigir erros do sistema base. Alguns apenas atualizam os nomes das entidades no novo domínio, outros corrigem links do breadcrumb, etc
 
 - **plugins** - pasta com os plugins desenvolvidos para o sistema
 
 - **themes** - pasta com o tema desenvolvido exclusivamente para este projeto
-  - **MapaInovacao** - tema deste projeto. Função principal de armazenar as imagens e modificações de estilização.
+  - **MapaInovacao** - tema deste projeto. Função principal de armazenar as imagens e modificações de estilização
 
 - **Translations**
   - **replacements** - arquivo com pseudo traduções, servem para trocar palavras do domínio cultural e trocar para o domínio de inovação (Ex. Agente Individual -> Pessoa Física)
 
+- **mapasculturais.sample.env** - arquivo de exemplo com variáveis de ambiente
+
 As pastas **conf**, **modules** e **translations** possuem a função de modificação do domínio do sistema (além de pequenas correções), as demais pastas e arquivos são padrão na implementação do mapasculturais.
 
-## Guia rápido para rodar o projeto localmente
+## Executar
 
 > > Guia pensado para executar no Ubuntu 24.04
 
@@ -56,15 +68,26 @@ As pastas **conf**, **modules** e **translations** possuem a função de modific
 | Docker         | 29.6.2 |
 | Docker Compose | 5.3.1  |
 
-### Script
-
-Com todos os pré-requisitos configurados, utilize o script sh <a href="./docker/local/menu.sh">menu.sh</a>:
+### Comandos
 
 ```bash
-sudo ./docker/local/menu.sh
+git clone https://github.com/SECTI-ES/mapas-ES
+cd mapas-ES
 ```
 
-> > Recomenda-se o sudo caso seu usuário não esteja no grupo docker e para facilitar a construção e utilização dos volumes.
+```bash
+chmod +x ./docker/local/menu.sh
+```
+
+### Script
+
+Com todos os pré-requisitos configurados, utilize o script sh [menu.sh](./docker/local/menu.sh):
+
+```bash
+./docker/local/menu.sh
+```
+
+> > Pode ser necessário utilizar sudo devido aos volumes docker e permissões do docker, caso seu usuário não esteja no grupo docker.
 
 Assim, será aberto um menu com as opções:
 
@@ -79,4 +102,19 @@ Assim, será aberto um menu com as opções:
 
 Basta selecionar a opção desejada e ela será executada.
 
-Você pode acessar o sistema em: <a href="http://localhost:80">localhost</a>
+Você pode acessar o sistema em: [localhost:80](http://localhost:80)
+
+## Contribuição
+
+### Equipe
+
+- **[David Propato](https://github.com/Propato)**
+- **[Salim Suhet](https://github.com/salimsuhet)**
+
+### Antigos colaboradores
+
+- **[Pedro Henrique](https://github.com/PhenBD)**
+
+## Licença
+
+- Consulte o arquivo [LICENSE](./LICENSE) na raiz do projeto para termos de licença.

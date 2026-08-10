@@ -1,18 +1,31 @@
 # Guia de desenvolvimento
 
-Este guia serve para os desenvolvedores entenderem os processos utilizados no desenvolvimentos deste projeto, como continuarem e, também, como fazerem suas próprias versões e dicas auxiliares.
+Este guia provê instruções e passo-a-passo dos processos utilizados no desenvolvimentos deste projeto, como continuarem e, também, como fazerem suas próprias versões e dicas auxiliares.
+
+## Índice
+
+- [Pré-Requisitos e Execução](#pré-requisitos-e-execução)
+- [Atualizar Docker Image Version](#atualizar-docker-image-version)
+- [Dicas de desenvolvimento](#dicas-de-desenvolvimento)
+  - [Outros projetos](#outros-projetos)
+  - [Encontrar problemas](#encontrar-problemas)
+  - [Criando seu próprio projeto](#criando-seu-próprio-projeto)
+  - [Criando tema](#criando-tema)
+  - [Configurando o sistema](#configurando-o-sistema)
+  - [Correções do sistema](#correções-do-sistema)
+  - [Modificando o domínio](#modificando-o-domínio)
 
 ## Pré-Requisitos e Execução
 
-Consultar <a href="./README.md">README</a>.
+Consultar o [README](./README.md).
 
 ## Atualizar Docker Image Version
 
-A atualização é por TAGs do mapasculturais, desenvolvido no repo <a href="https://github.com/mapasculturais/mapasculturais">mapasculturais</a>.
+A atualização é por TAGs do mapasculturais, desenvolvido no repo [mapasculturais](https://github.com/mapasculturais/mapasculturais).
 
 A cada nova atualização, o processo utilizado é:
 
-1. Atualizar a versão do <a href="./docker/Dockerfile">Dockerfile</a>.
+1. Atualizar a versão do [Dockerfile](./docker/Dockerfile).
 2. Comparar a TAG anterior com a atualizada no github.
 3. Verificar se algum dos arquivos que é sobrescrito no nosso projeto foi alterado, se sim: Incorporar a modificação no nosso arquivo mantendo a nossa modificação.
 4. Rodar o sistema e fazer as verificações necessárias.
@@ -29,9 +42,9 @@ Criar um script que verifica os arquivos alterados entre duas versões diferente
 
 Há diversos outros projetos que implementam o mapasculturais e seus diversos plugins. Assim, recomenda-se sempre ficar atento há outros projetos ativos pois podemos encontrar possíveis melhorias e exemplos de uso real para nos basearmos. Exemplo de projetos:
 
-- <a href="https://github.com/hacklabr/mapas-ES">mapas-ES</a>
-- <a href="https://github.com/hacklabr/mapas-PA">mapas-PA</a>
-- <a href="https://github.com/hacklabr/mapas-PE">mapas-PE</a>
+- [mapas-ES](https://github.com/hacklabr/mapas-ES)
+- [mapas-PA](https://github.com/hacklabr/mapas-PA)
+- [mapas-PE](https://github.com/hacklabr/mapas-PE)
 
 ### Encontrar problemas
 
@@ -49,8 +62,8 @@ Para criar seu próprio projeto, basta copiar as pastas **db**, **docker**, **do
 
 ### Criando tema
 
-1. Crie uma pasta com o nome do tema dentro de da <a href="./themes/">pasta de temas</a>
-2. Configure o tema em <a href="./docker/common/config.d/0.main.php">0.main.php</a>
+1. Crie uma pasta com o nome do tema dentro de da [pasta de temas](./themes/)
+2. Configure o tema em [0.main.php](./docker/common/config.d/0.main.php)
 3. Crie o arquivo **Theme.php** com o constructor do tema.
 4. Adicione as imagens, fontes e icones na pasta assets.
 5. Adicione suas modificações scss na pasta assets-src, onde eles serão integrados ao scss já existente do sistema.
@@ -59,7 +72,7 @@ Em conjunto, analise os arquivos desse e de outros projetos, além do próprio m
 
 ### Configurando o sistema
 
-Na pasta <a href="./docker/common/config.d">config.d</a> é possível encontrar as principais configurações do sistema.
+Na pasta [config.d](./docker/common/config.d) é possível encontrar as principais configurações do sistema.
 
 - **0.main**: arquivo de configuração base do sistema
 - **plugins**: arquivo de configuração dos plugins utilizados e ativos do sistema
@@ -82,7 +95,7 @@ Para implementar correções mais profundas (ou seja, que não são questões ap
 
 Para alterar o domínio do sistema, foi necessário adicionar:
 
-- Pasta <a href="./conf/">conf</a>, que agrupa as configurações de taxonomia e opções de valores para as entidades do sistema, alterando de "Agente Coletivo" para "Pessoa Jurídica", por exemplo.
+- Pasta [conf](./conf/), que agrupa as configurações de taxonomia e opções de valores para as entidades do sistema, alterando de "Agente Coletivo" para "Pessoa Jurídica", por exemplo.
 - Sobrescrever arquivos na pasta **modules** para alterar linhas com textos no domínio cultural.
 - Adicionar traduções que, na realidade, apenas trocam textos em português no domínio cultural para textos no domínio de inovação.
 
