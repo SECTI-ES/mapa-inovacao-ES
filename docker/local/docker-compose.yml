@@ -2,20 +2,20 @@ services:
   mapas:
     container_name: mapas-ES
     build:
-      context: ../
+      context: ../../
       dockerfile: docker/Dockerfile
     command: /var/www/dev/start.sh
     ports:
       - "80:80"
     volumes:
-      # - ../docker-data/assets:/var/www/html/assets
-      # - ../docker-data/public-files:/var/www/html/files
-      # - ../docker-data/private-files:/var/www/private-files
-      - ../docker-data/logs:/var/www/var/logs
+      # - ../../docker-data/assets:/var/www/html/assets
+      # - ../../docker-data/public-files:/var/www/html/files
+      # - ../../docker-data/private-files:/var/www/private-files
+      - ../../docker-data/logs:/var/www/var/logs
 
       - ./config.d:/var/www/config/config.d
 
-      - ../themes/MapaInovacaoES:/var/www/src/themes/MapaInovacaoES
+      - ../../themes/MapaInovacaoES:/var/www/src/themes/MapaInovacaoES
 
     environment:
       - PENDING_PCACHE_RECREATION_INTERVAL=5
@@ -59,5 +59,5 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ../db:/docker-entrypoint-initdb.d
-      - ../docker-data/db-data:/var/lib/postgresql/data
+      - ../../db:/docker-entrypoint-initdb.d
+      - ../../docker-data/db-data:/var/lib/postgresql/data

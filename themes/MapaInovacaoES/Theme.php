@@ -6,8 +6,6 @@ use MapasCulturais\app;
 
 class Theme extends \MapasCulturais\Themes\BaseV2\Theme {
 
-    // public $mode = 'light';
-    
     static function getThemeFolder() {
         return __DIR__;
     }
@@ -37,21 +35,4 @@ class Theme extends \MapasCulturais\Themes\BaseV2\Theme {
             }
         });
     }
-
-    /*
-    Pré função para fazer a troca do modo do site (mode escuro/dark e claro/light), caso seja necessária no futuro.
-    */
-    // function switchMode($mode){
-
-    //     $app = App::i();
-    //     $this->mode = $mode;
-
-    //     $app->config['logo.image'] = 'icon/' . $mode . '/logo.png';
-    //     $app->config['share.image'] = 'icon/' . $mode . '/share.png';
-    //     $app->config['share.image_twitter'] = 'icon/' . $mode . '/share.png';
-    //     // nao identifiquei a key para o mail-image
-        
-    //     $app->config['favicon.180'] = 'icon/' . $mode . '/favicon-180x180.png';
-    //     $app->config['favicon.svg'] = 'icon/' . $mode . '/favicon.svg';
-    // }
 }
