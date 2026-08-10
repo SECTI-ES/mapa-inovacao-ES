@@ -2,9 +2,9 @@
 
 Repositório do Mapa de Inovação do Espírito Santo.
 
-Este projeto de baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações refentes ao domínio e escopo do projeto, atendendo agora há programas, eventos e etc relacionados a inovação no estado do Espírito Santo.
+Este projeto se baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações referentes ao domínio e escopo do projeto, atendendo agora a programas, eventos e outras iniciativas relacionados a inovação no estado do Espírito Santo.
 
-A pasta **modules** é um dos maiores diferenciais deste projetos em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais) como base. Ele sobrescreve os arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
+A pasta **modules** é um dos maiores diferenciais deste projeto em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais) como base. Ela sobrescreve arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
 
 ## Índice
 
@@ -22,8 +22,8 @@ A pasta **modules** é um dos maiores diferenciais deste projetos em comparaçã
   - **settings.json**: arquivo com configurações básicas da IDE VSCode
 
 - **conf**
-  - **csv**: pasta com arquivos csv que armazenam areas de atuação de ocupação definidas pelo governo federal
-  - **\*-types e taxonomies**: arquivos de definição/configuração dos tipos das entidades, necessário devido mudança de domínio do sistema
+  - **csv**: pasta com arquivos csv que armazenam áreas de atuação de ocupação definidas pelo governo federal
+  - **\*-types e taxonomies**: arquivos de definição/configuração dos tipos das entidades, necessários devido à mudança de domínio do sistema
 
 - **db**
   - **dump**: arquivo de dump sql padrão
@@ -38,7 +38,7 @@ A pasta **modules** é um dos maiores diferenciais deste projetos em comparaçã
   - **nginx** - arquivo de configuração do nginx
 
 - **em-breve**
-  - **\*** - arquivos usados para indicar que o site esta em manutenção
+  - **\*** - arquivos usados para indicar que o site está em manutenção
 
 - **modules**
   - **\*** - arquivos a serem sobrescritos para ajustar o sistema ao novo domínio e/ou corrigir erros do sistema base. Alguns apenas atualizam os nomes das entidades no novo domínio, outros corrigem links do breadcrumb, etc
@@ -48,7 +48,7 @@ A pasta **modules** é um dos maiores diferenciais deste projetos em comparaçã
 - **themes** - pasta com o tema desenvolvido exclusivamente para este projeto
   - **MapaInovacao** - tema deste projeto. Função principal de armazenar as imagens e modificações de estilização
 
-- **Translations**
+- **translations**
   - **replacements** - arquivo com pseudo traduções, servem para trocar palavras do domínio cultural e trocar para o domínio de inovação (Ex. Agente Individual -> Pessoa Física)
 
 - **mapasculturais.sample.env** - arquivo de exemplo com variáveis de ambiente
@@ -57,11 +57,11 @@ As pastas **conf**, **modules** e **translations** possuem a função de modific
 
 ## Executar
 
-> > Guia pensado para executar no Ubuntu 24.04
+> Guia pensado para executar no Ubuntu 24.04
 
 ### Pré-requisitos
 
-> > Projeto desenvolvido majoritariamente no Ubuntu.
+> Projeto desenvolvido majoritariamente no Ubuntu.
 
 | Ferramenta     | Versão |
 | -------------- | ------ |
@@ -81,13 +81,13 @@ chmod +x ./docker/local/menu.sh
 
 ### Script
 
-Com todos os pré-requisitos configurados, utilize o script sh [menu.sh](./docker/local/menu.sh):
+Com todos os pré-requisitos configurados, utilize o bash script [menu.sh](./docker/local/menu.sh):
 
 ```bash
 ./docker/local/menu.sh
 ```
 
-> > Pode ser necessário utilizar sudo devido aos volumes docker e permissões do docker, caso seu usuário não esteja no grupo docker.
+> Pode ser necessário utilizar sudo devido aos volumes docker e permissões do docker, caso seu usuário não esteja no grupo docker.
 
 Assim, será aberto um menu com as opções:
 
@@ -102,7 +102,7 @@ Assim, será aberto um menu com as opções:
 
 Basta selecionar a opção desejada e ela será executada.
 
-Você pode acessar o sistema em: [localhost:80](http://localhost:80)
+Você pode acessar o sistema em: [http://localhost:80](http://localhost:80)
 
 ## Contribuição
 

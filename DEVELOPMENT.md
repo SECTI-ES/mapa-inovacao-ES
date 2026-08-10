@@ -1,10 +1,10 @@
 # Guia de desenvolvimento
 
-Este guia provê instruções e passo-a-passo dos processos utilizados no desenvolvimentos deste projeto, como continuarem e, também, como fazerem suas próprias versões e dicas auxiliares.
+Este guia apresenta instruções e o passo a passo dos processos utilizados no desenvolvimento deste projeto, além de orientações para sua manutenção, criação de novas versões e outras dicas úteis.
 
 ## Índice
 
-- [Pré-Requisitos e Execução](#pré-requisitos-e-execução)
+- [Pré-requisitos e execução](#pré-requisitos-e-execução)
 - [Atualizar Docker Image Version](#atualizar-docker-image-version)
 - [Dicas de desenvolvimento](#dicas-de-desenvolvimento)
   - [Outros projetos](#outros-projetos)
@@ -15,32 +15,36 @@ Este guia provê instruções e passo-a-passo dos processos utilizados no desenv
   - [Correções do sistema](#correções-do-sistema)
   - [Modificando o domínio](#modificando-o-domínio)
 
-## Pré-Requisitos e Execução
+## Pré-requisitos e execução
 
 Consultar o [README](./README.md).
 
 ## Atualizar Docker Image Version
 
-A atualização é por TAGs do mapasculturais, desenvolvido no repo [mapasculturais](https://github.com/mapasculturais/mapasculturais).
+A atualização do sistema é realizada utilizando as **tags** do [Mapas Culturais](https://github.com/mapasculturais/mapasculturais).
 
 A cada nova atualização, o processo utilizado é:
 
-1. Atualizar a versão do [Dockerfile](./docker/Dockerfile).
-2. Comparar a TAG anterior com a atualizada no github.
-3. Verificar se algum dos arquivos que é sobrescrito no nosso projeto foi alterado, se sim: Incorporar a modificação no nosso arquivo mantendo a nossa modificação.
-4. Rodar o sistema e fazer as verificações necessárias.
+1. Atualizar a versão no [Dockerfile](./docker/Dockerfile).
+2. Comparar a tag anterior com a nova versão no GitHub.
+3. Verificar se algum dos arquivos sobrescritos pelo nosso projeto foi alterado. Caso tenha sido, incorporar as modificações ao nosso arquivo, preservando as alterações específicas deste projeto.
+4. Executar o sistema e realizar as verificações necessárias.
 
-Este processo é necessário pois como sobrescrevemos alguns arquivos do sistema base dentro do container, se não os atualizarmos com as novas alterações, eles podem apresentar erros, inconsistências e outros problemas.
+Esse processo é necessário porque alguns arquivos do sistema base são sobrescritos dentro do container. Caso essas alterações não sejam incorporadas às novas versões, podem ocorrer erros, inconsistências e outros problemas.
 
 ### To Do
 
-Criar um script que verifica os arquivos alterados entre duas versões diferentes do sistema e analisa se esses arquivos existem no nosso projeto ou não (pois como a sobrescrita dos arquivos é baseada no nome deles, e'possível verificar isso apenas verificando os nomes).
+Criar um script que verifique os arquivos alterados entre duas versões diferentes do sistema e identifique quais desses arquivos também existem no nosso projeto.
+
+Como a sobrescrita dos arquivos é baseada em seus nomes, essa verificação pode ser realizada comparando os nomes dos arquivos alterados na nova versão com os arquivos existentes no projeto.
 
 ## Dicas de desenvolvimento
 
 ### Outros projetos
 
-Há diversos outros projetos que implementam o mapasculturais e seus diversos plugins. Assim, recomenda-se sempre ficar atento há outros projetos ativos pois podemos encontrar possíveis melhorias e exemplos de uso real para nos basearmos. Exemplo de projetos:
+Há diversos outros projetos que implementam o Mapas Culturais e seus respectivos plugins. Recomenda-se ficar atento a outros projetos ativos, pois eles podem apresentar possíveis melhorias e exemplos de uso real que podem servir como referência.
+
+Alguns exemplos:
 
 - [mapas-ES](https://github.com/hacklabr/mapas-ES)
 - [mapas-PA](https://github.com/hacklabr/mapas-PA)
@@ -48,56 +52,58 @@ Há diversos outros projetos que implementam o mapasculturais e seus diversos pl
 
 ### Encontrar problemas
 
-Como este é um projeto extenso com diversos arquivos, as vezes encontrar a origem de um problema pode ser complicado, assim, uma possível estratégia é:
+Como este é um projeto extenso, com diversos arquivos, às vezes encontrar a origem de um problema pode ser complicado. Uma possível estratégia é:
 
 1. Encontrar o menor bloco de elementos da tela que engloba o problema.
-2. Encontrar um elemento com diversas classe css nesse bloco.
-3. Buscar a classe no projeto mapasculturais.
+2. Encontrar um elemento com diversas classes CSS nesse bloco.
+3. Buscar a classe no projeto [Mapas Culturais](https://github.com/mapasculturais/mapasculturais).
 
-Assim, você encontrou o trecho de código correspondente aquele trecho, agora basta analisar o código e entender os processos executados e arquivos/funções chamadas para, assim, encontrar a origem do problema.
+Assim, é possível encontrar o trecho de código correspondente àquele elemento. A partir daí, basta analisar o código e entender os processos executados e os arquivos e funções chamados para encontrar a origem do problema.
 
 ## Criando seu próprio projeto
 
-Para criar seu próprio projeto, basta copiar as pastas **db**, **docker**, **docker-data**, os arquivos **sh** da raiz e criar o seu próprio tema, aplicando as modificações necessárias nos arquivos de configuração e adicionando os plugins que se deseja utilizar.
+Para criar seu próprio projeto, basta copiar as pastas **db**, **docker** e **docker-data**, além dos arquivos `.sh` da raiz, criar seu próprio tema e aplicar as modificações necessárias nos arquivos de configuração, adicionando também os plugins desejados.
 
 ### Criando tema
 
-1. Crie uma pasta com o nome do tema dentro de da [pasta de temas](./themes/)
-2. Configure o tema em [0.main.php](./docker/common/config.d/0.main.php)
-3. Crie o arquivo **Theme.php** com o constructor do tema.
-4. Adicione as imagens, fontes e icones na pasta assets.
-5. Adicione suas modificações scss na pasta assets-src, onde eles serão integrados ao scss já existente do sistema.
+1. Crie uma pasta com o nome do tema dentro da [pasta de temas](./themes/).
+2. Configure o tema em [0.main.php](./docker/common/config.d/0.main.php).
+3. Crie o arquivo **Theme.php** com o construtor do tema.
+4. Adicione as imagens, fontes e ícones na pasta **assets**.
+5. Adicione suas modificações SCSS na pasta **assets-src**, onde serão integradas ao SCSS já existente do sistema.
 
-Em conjunto, analise os arquivos desse e de outros projetos, além do próprio mapascultuais para identificar a melhor forma de adicionar suas próprias modificações.
+Em conjunto, analise os arquivos deste e de outros projetos, além do próprio [Mapas Culturais](https://github.com/mapasculturais/mapasculturais), para identificar a melhor forma de adicionar suas próprias modificações.
 
 ### Configurando o sistema
 
-Na pasta [config.d](./docker/common/config.d) é possível encontrar as principais configurações do sistema.
+Na pasta [config.d](./docker/common/config.d) estão algumas das principais configurações do sistema.
 
-- **0.main**: arquivo de configuração base do sistema
-- **plugins**: arquivo de configuração dos plugins utilizados e ativos do sistema
-- **texts**: arquivo de definição dos textos do sistema, utilizados principalmente para a home.
-- **\***: arquivos de definição dos caminhos de imagens, ícones, arquivos e etc.
+- **0.main**: arquivo de configuração base do sistema.
+- **plugins**: arquivo de configuração dos plugins utilizados e ativos no sistema.
+- **texts**: arquivo de definição dos textos do sistema, utilizados principalmente na página inicial.
+- **\***: arquivos de definição dos caminhos de imagens, ícones, arquivos etc.
 
-O arquivo **docker/production/config.d/authentication** também é importante pois serve para configurar os métodos e as variáveis para a autenticação do sistema em conjunto com o plugin MultipleLocalAuth.
+O arquivo **docker/production/config.d/authentication** também é importante, pois configura os métodos e as variáveis utilizados para a autenticação do sistema em conjunto com o plugin **MultipleLocalAuth**.
 
-Os demais arquivos podem ser copiados da forma que estão que não terá implicações negativas.
+Os demais arquivos normalmente podem ser copiados sem necessidade de alterações adicionais.
 
 ### Correções do sistema
 
-Para implementar correções mais profundas (ou seja, que não são questões apenas de estilização) pode ser necessário fazer alterações nos arquivos internos do sistema, assim:
+Para implementar correções mais profundas, ou seja, alterações que não sejam apenas questões de estilização, pode ser necessário sobrescrever arquivos internos do sistema.
 
-1. Crie a pasta correspondente ao arquivo com a solução: modules, core, etc.
-2. Adicione o arquivo com o nome correspondente.
-3. Adicione a linha no Dockerfile que copiará a pasta para dentro da imagem e, assim, sobrescrevendo o arquivo original e adicionando a correção.
+Nesse caso:
+
+1. Identifique a pasta correspondente ao arquivo que será sobrescrito, como **modules**, **core**, etc.
+2. Adicione ao projeto o arquivo com o mesmo caminho e nome do arquivo original.
+3. Adicione a instrução correspondente ao [Dockerfile](./docker/Dockerfile) para copiar o arquivo para dentro da imagem, sobrescrevendo o arquivo original e adicionando a correção.
 
 ### Modificando o domínio
 
-Para alterar o domínio do sistema, foi necessário adicionar:
+Para adaptar o sistema ao domínio de inovação, foi necessário adicionar:
 
-- Pasta [conf](./conf/), que agrupa as configurações de taxonomia e opções de valores para as entidades do sistema, alterando de "Agente Coletivo" para "Pessoa Jurídica", por exemplo.
-- Sobrescrever arquivos na pasta **modules** para alterar linhas com textos no domínio cultural.
-- Adicionar traduções que, na realidade, apenas trocam textos em português no domínio cultural para textos no domínio de inovação.
+- A pasta [conf](./conf/), que agrupa as configurações de taxonomia e opções de valores para as entidades do sistema, alterando, por exemplo, "Agente Coletivo" para "Pessoa Jurídica".
+- Arquivos sobrescritos na pasta **modules** para alterar textos e comportamentos relacionados ao domínio cultural.
+- Traduções que, na prática, substituem textos do domínio cultural por textos adequados ao domínio de inovação.
 
 ## Notas do README antigo (a serem validadas)
 
