@@ -4,7 +4,9 @@ Repositório do Mapa de Inovação do Espírito Santo.
 
 Este projeto se baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações referentes ao domínio e escopo do projeto, atendendo agora a programas, eventos e outras iniciativas relacionados a inovação no estado do Espírito Santo.
 
-A pasta **modules** é um dos maiores diferenciais deste projeto em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais) como base. Ela sobrescreve arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
+A pasta **modules** é um dos maiores diferenciais deste projeto em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais/tree/master) como base. Ela sobrescreve arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
+
+Para mais detalhes da implementação, dicas para seu próprio projeto e/ou manutenção, acesse [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 ## Índice
 
@@ -60,8 +62,6 @@ As pastas **conf**, **modules** e **translations** possuem a função de modific
 > Guia pensado para executar no Ubuntu 24.04
 
 ### Pré-requisitos
-
-> Projeto desenvolvido majoritariamente no Ubuntu.
 
 | Ferramenta     | Versão |
 | -------------- | ------ |
