@@ -22,7 +22,7 @@ return [
     'app.siteName' => env('SITE_NAME', i::__('Mapa da Inovação ES')),  /* Linha do Mapa Inovação */
 
     /* Breve descrição do site. É utilizado como texto de compartilhamento da página principal do site. */
-    'app.siteDescription' => env('SITE_DESCRIPTION', i::__('O Mapa de Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado.')), /* Linha do Mapa Inovação */
+    'app.siteDescription' => env('SITE_DESCRIPTION', i::__('O Mapa da Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado.')), /* Linha do Mapa Inovação */
 
     /* Ids dos selos verificadores. Para utilizar múltiplos selos informe os ids separados por vírgula. */
     'app.verifiedSealsIds' => explode(',', env('VERIFIED_SEALS', '1')),

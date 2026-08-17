@@ -2,8 +2,8 @@
 use \MapasCulturais\i;
 
 return [
-    "text:home-header.title" => i::__("Boas vindas ao Mapa de Inovação do Espírito Santo"),
-    "text:home-header.description" => i::__("O Mapa de Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado. Além de ser um instrumento de governança digital, o mapa contribui para o aprimoramento da gestão pública, dos mecanismos de participação e da democratização do acesso às políticas de inovação promovidas no Espírito Santo. Por meio dele, é possível estruturar sistemas de informações e indicadores que impulsionam o desenvolvimento e a promoção da inovação no estado."),
+    "text:home-header.title" => i::__("Boas vindas ao Mapa da Inovação do Espírito Santo"),
+    "text:home-header.description" => i::__("O Mapa da Inovação do Espírito Santo é uma plataforma livre, colaborativa e interativa que mapeia e promove o cenário de inovação no estado. Além de ser um instrumento de governança digital, o mapa contribui para o aprimoramento da gestão pública, dos mecanismos de participação e da democratização do acesso às políticas de inovação promovidas no Espírito Santo. Por meio dele, é possível estruturar sistemas de informações e indicadores que impulsionam o desenvolvimento e a promoção da inovação no estado."),
 
     /* Esses textos estão sendo modificados diretamente no arquivo dentro do tema */
     // "text:home-entities.title" => i::__("Aqui você encontra as informações da inovação em sua região!"),
@@ -21,5 +21,5 @@ return [
     "),
 
     "text:home-developers.title" => i::__("Alô desenvolvedores!"),
-    "text:home-developers.description" => "Além disso, o Mapa de Inovação é um projeto em desenvolvimento com apoio da MCI, FAPES, SECTI e pelo Governo do Estado do Espírito Santo. É baseado no Mapas Culturais, um software livre, criado em parceria entre a hacklab/, secretarias de cultura, organizações não governamentais, empresas e coletivos que investem na plataforma. Você pode contribuir para o seu desenvolvimento através do GitHub."
+    "text:home-developers.description" => "Além disso, o Mapa da Inovação é um projeto em desenvolvimento com apoio da MCI, FAPES, SECTI e pelo Governo do Estado do Espírito Santo. É baseado no Mapas Culturais, um software livre, criado em parceria entre a hacklab/, secretarias de cultura, organizações não governamentais, empresas e coletivos que investem na plataforma. Você pode contribuir para o seu desenvolvimento através do GitHub."
 ];

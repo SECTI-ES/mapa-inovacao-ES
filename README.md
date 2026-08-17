@@ -1,6 +1,6 @@
-# Mapa de Inovação do Espírito Santo
+# Mapa da Inovação do Espírito Santo
 
-Repositório do Mapa de Inovação do Espírito Santo.
+Repositório do Mapa da Inovação do Espírito Santo.
 
 Este projeto se baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações referentes ao domínio e escopo do projeto, atendendo agora a programas, eventos e outras iniciativas relacionados a inovação no estado do Espírito Santo.
 
