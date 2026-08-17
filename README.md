@@ -1,93 +1,120 @@
-# Mapa Cultural do Espírito Santo
-Repositório do Mapa Cultural do Espírito Santo
+# Mapa da Inovação do Espírito Santo
 
-Este repositório já utiliza como autenticador o plugin MultipleLocalAuth.
+Repositório do Mapa da Inovação do Espírito Santo.
 
-## Estrutura de arquivos
-- **compose**
-    - **common** - arquivos comuns dos ambientes de desenvolvimento e produção
-    - **local** - arquivos exclusivamente para o ambiente de desenvolvimento
-    - **production** - arquivos exclusivamente para o ambiente de produção
-- **dev-scripts** - scripts auxiliares para o desenvolvimento
-    - **start-dev.sh** - script que inicializa o ambiente de desenvolvimento
-    - **bash.sh** - entra no container da aplicação
-    - **shell.sh** - entra no shell do mapas culturais
-    - **psql.sh** - entra no banco de dados da aplicação
-    - **docker-compose.local.yml** - arquivo de definição do docker-compose utilizado pelos scripts acima
-- **plugins** - pasta com os plugins desenvolvidos exclusivamente para o projeto
-    - **AldirBlanc** - plugin que implementa os formulários de cadastro do inciso I e II da Lei Aldir Blanc
-- **themes** - pasta com os temas desenvolvidos exclusivaente para o projeto
-    - **SampleTheme** - esqueleto de tema filho do BaseV1 para demostração e para servir de base para o desenvolvimento de outros temas
+Este projeto se baseia no projeto do Mapa Cultural, porém, além das modificações esperadas de estilização, há também modificações referentes ao domínio e escopo do projeto, atendendo agora a programas, eventos e outras iniciativas relacionados a inovação no estado do Espírito Santo.
 
-## Guia rápido para início de novo projeto
-Antes de tudo certifique-se de ter os pacotes _git_, _docker_ e _docker-compose_ instalados e estar utilizando sistema operacional Linux ou MacOS. 
+A pasta **modules** é um dos maiores diferenciais deste projeto em comparação com os demais que utilizam a imagem docker do [mapasculturais](https://github.com/mapasculturais/mapasculturais/tree/master) como base. Ela sobrescreve arquivos com o mesmo nome no sistema base para realizar pequenas correções e/ou adequações ao domínio específico deste projeto.
 
-_Nos exemplos é usado o comando sudo para que os scripts tenham os privilégios requeridos pelo docker._
+Para mais detalhes da implementação, dicas para seu próprio projeto e/ou manutenção, acesse [DEVELOPMENT.md](./DEVELOPMENT.md)
 
-### Ambiente de desenvolvimento
+## Índice
 
-#### Iniciando o ambiente de desenvolvimento
-Para subir o ambiente de desenvolvimento basta entrar na pasta `dev-scripts` e rodar o script `start-dev.sh`.
+- [Estrutura do repositório](#estrutura-do-repositório)
+- [Executar](#executar)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Comandos](#comandos)
+  - [Script](#script)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-```
-mapas-es/dev-scripts/$ sudo ./start-dev.sh
-```
-acesse no seu navegador http://localhost:8080/
+## Estrutura do repositório
 
-#### psysh
-Este ambiente roda com o built-in web server do PHP, o que possibilita que seja utilizado o [PsySH](https://psysh.org/), um console interativo para debug e desenvolvimento. 
+- **.vscode**
+  - **settings.json**: arquivo com configurações básicas da IDE VSCode
 
-no lugar desejado, adicione a linha `eval(\psy\sh());` e você obterá um console. `Ctrl + D` para continuar a execução do código.
+- **conf**
+  - **csv**: pasta com arquivos csv que armazenam áreas de atuação de ocupação definidas pelo governo federal
+  - **\*-types e taxonomies**: arquivos de definição/configuração dos tipos das entidades, necessários devido à mudança de domínio do sistema
 
-#### Parando o ambiente de desenvolvimento
-Para parar o ambiente de desenvolvimento usar as teclas `Ctrl + C`
+- **db**
+  - **dump**: arquivo de dump sql padrão
 
-## Usuário super administrador da rede
-O banco de dados inicial inclui um usuário de role `saasSuperAdmin` de **id** `1` e **email** `Admin@local`.
-Este usuário possui permissão de criar, modificar e deletar qualquer objeto do banco.
+- **docker**
+  - **common** - arquivos comuns dos ambientes de desenvolvimento e produção
+  - **local** - arquivos exclusivamente para o ambiente local de desenvolvimento
+  - **production** - arquivos exclusivamente para o ambiente de produção
 
-- **email**: `Admin@local`
-- **senha**: `mapas123`
+- **docker-data**
+  - **certbot** - arquivo de configuração do certbot
+  - **nginx** - arquivo de configuração do nginx
 
-## Criando um novo tema
-Usaremos para exemplo o nome de tema `NovoTema`
+- **em-breve**
+  - **\*** - arquivos usados para indicar que o site está em manutenção
 
-1. copie a pasta `themes/SampleTheme` para `themes/NovoTema`;
-```
-meu-mapas/themes$ cp -a SamplesTheme NovoTema
-```
-2. edite o arquivo `dev-scripts/docker-compose.yml` adicionando uma linha na seção _volumes_ para o tema:
-```
-    - ../themes/NovoTema:/var/www/html/protected/application/themes/NovoTema
-```
-3. edite o arquivo `themes/NovoTema/Theme.php` e substitua o namespace (linha 2) por `NovoTema`:
-```+PHP
-<?php
-namespace NovoTema;
-```
+- **modules**
+  - **\*** - arquivos a serem sobrescritos para ajustar o sistema ao novo domínio e/ou corrigir erros do sistema base. Alguns apenas atualizam os nomes das entidades no novo domínio, outros corrigem links do breadcrumb, etc
 
+- **plugins** - pasta com os plugins desenvolvidos para o sistema
 
-## Deployment para produção
-@todo
+- **themes** - pasta com o tema desenvolvido exclusivamente para este projeto
+  - **MapaInovacao** - tema deste projeto. Função principal de armazenar as imagens e modificações de estilização
 
-### Configurações
-@todo
+- **translations**
+  - **replacements** - arquivo com pseudo traduções, servem para trocar palavras do domínio cultural e trocar para o domínio de inovação (Ex. Agente Individual -> Pessoa Física)
 
-### Inicializando os serviços
-@todo
-```
-meu-mapas$ sudo docker-compose -f docker-compose.prod.yml up
+- **mapasculturais.sample.env** - arquivo de exemplo com variáveis de ambiente
+
+As pastas **conf**, **modules** e **translations** possuem a função de modificação do domínio do sistema (além de pequenas correções), as demais pastas e arquivos são padrão na implementação do mapasculturais.
+
+## Executar
+
+> Guia pensado para executar no Ubuntu 24.04
+
+### Pré-requisitos
+
+| Ferramenta     | Versão |
+| -------------- | ------ |
+| Docker         | 29.6.2 |
+| Docker Compose | 5.3.1  |
+
+### Comandos
+
+```bash
+git clone https://github.com/SECTI-ES/mapas-ES
+cd mapas-ES
 ```
 
-### Atualizando o Mapas Culturais
-Modifique a versão do Mapas Culturais no início do arquivo `compose/production/Dockerfile` e execute os comandos abaixo:
-```
-meu-mapas$ sudo docker-compose -f docker-compose.prod.yml build
-meu-mapas$ sudo docker-compose -f docker-compose.prod.yml restart mapasculturais
+```bash
+chmod +x ./docker/local/menu.sh
 ```
 
-### TLS / HTTPS
-@todo
+### Script
 
-#### Let`s Encrypt
-@todo
+Com todos os pré-requisitos configurados, utilize o bash script [menu.sh](./docker/local/menu.sh):
+
+```bash
+./docker/local/menu.sh
+```
+
+> Pode ser necessário utilizar sudo devido aos volumes docker e permissões do docker, caso seu usuário não esteja no grupo docker.
+
+Assim, será aberto um menu com as opções:
+
+1. `Start Ambiente Local`
+2. `Build Ambiente Local`
+3. `Exibir Logs`
+4. `Acessar Container`
+5. `Parar Containers`
+6. `Apagar Containers`
+7. `Apagar Ambiente Local`
+8. `Sair`
+
+Basta selecionar a opção desejada e ela será executada.
+
+Você pode acessar o sistema em: [http://localhost:80](http://localhost:80)
+
+## Contribuição
+
+### Equipe
+
+- **[David Propato](https://github.com/Propato)**
+- **[Salim Suhet](https://github.com/salimsuhet)**
+
+### Antigos colaboradores
+
+- **[Pedro Henrique](https://github.com/PhenBD)**
+
+## Licença
+
+- Consulte o arquivo [LICENSE](./LICENSE) na raiz do projeto para termos de licença.

@@ -47,6 +47,14 @@ use MapasCulturais\i;
                         <!-- Corrige tipo do agente -->
                         <?= i::__("Habilitar a vinculação de pessoa jurídica")?>
                     </label>
+                    <label v-if="proponentAgentRelation['Pessoa Jurídica']">
+                        <input
+                            type="checkbox"
+                            :checked="proponentAgentRelationAvatar['Pessoa Jurídica']"
+                            @change="toggleAgentRelationAvatar($event, 'Pessoa Jurídica')"
+                        >
+                        <?= i::__("Habilitar solicitação de imagem de perfil")?>
+                    </label>
                 </div>
             </div>
         </div>

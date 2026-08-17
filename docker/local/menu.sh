@@ -13,7 +13,7 @@ clean_docker_data(){
 
 clear
 ROOT_DIRETORY="$(pwd)"
-cd $ROOT_DIRETORY/dev
+cd $ROOT_DIRETORY/docker/local
 
 CONTAINER_MAPA=mapas-ES
 CONTAINER_REDIS=redis-mapas

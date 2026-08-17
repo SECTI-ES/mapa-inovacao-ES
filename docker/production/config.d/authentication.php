@@ -12,7 +12,8 @@ return [
 
         'urlSupportEmail' => 'mailto:seedes@secti.es.gov.br',
 
-        'salt' => env('AUTH_SALT', null),
+        'salt' => env('AUTH_SALT', 'SECURITY_SALT'),
+        'wizard' => 'true',
         'timeout' => '24 hours',
 
         'google-recaptcha-secret' => env('GOOGLE_RECAPTCHA_SECRET', false),
