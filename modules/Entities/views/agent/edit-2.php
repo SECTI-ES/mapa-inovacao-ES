@@ -1,7 +1,5 @@
 <?php
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'entity';
@@ -33,6 +31,7 @@ $this->import('
     mc-tab
 ');
 
+// correção dos breadcrumbs do Mapa da Inovação
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -111,7 +110,7 @@ $this->breadcrumb = [
                                 <entity-field :entity="entity" classes="col-9 sm:col-12" prop="nomeSocial" label="<?php i::_e('Nome Fantasia') ?>"></entity-field>
                                 <entity-field :entity="entity" classes="col-9 sm:col-12" prop="nomeCompleto" label="<?php i::_e('Razão Social') ?>"></entity-field>
                                 <entity-field v-if="global.auth.is('admin')" :entity="entity" prop="type" @change="entity.save(true).then(() => global.reload())" classes="col-12"></entity-field>
-                                <entity-field :entity="entity" classes="col-12" prop="cnpj" label="CNPJ"></entity-field>
+                                <entity-field :entity="entity" classes="col-12" prop="cnpj" label="CNPJ" :required="<?= $entity->isPropertyRequired($entity, 'cnpj') ? 'true' : 'false' ?>"></entity-field>
                                 <entity-field :disabled="!(entity?.cnpj?.length == 18)" :entity="entity" classes="col-12" prop="cnpjAnexo" title-modal="<?php i::_e('Anexar CNPJ - Formatos: (png, jpeg, pdf)') ?>" group-name="docs-cnpj" :hide-label="true"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="dataDeNascimento" label="<?= i::__('Data de fundação') ?>"></entity-field>
                                 <entity-field :entity="entity" classes="col-12" prop="emailPrivado" label="<?= i::__('E-mail privado ') ?>"></entity-field>
