@@ -1,9 +1,8 @@
 # Como ver o andamento da inscrição?
 
-- oportunidade
-- edital
-- inscrição
-
+- Oportunidade
+- Edital
+- Inscrição
 
 <b>Não é possível acompanhar o andamento da inscrição. </b>
 

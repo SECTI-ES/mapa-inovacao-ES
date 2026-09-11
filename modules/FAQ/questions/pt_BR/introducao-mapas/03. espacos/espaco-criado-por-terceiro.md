@@ -1,18 +1,18 @@
 # Meu espaço está criado mas outra pessoa é proprietário dela no Mapa da Inovação. O que devo fazer?
 
-- espaço
-- criação
-- proprietário
+- Espaço
+- Criação
+- Proprietário
 
 Se você identificou que outro usuário está como proprietário de um espaço que lhe pertence no Mapa da Inovação, **siga estes passos:**
 
-* **Reúna a documentação:** Junte todos os documentos que comprovem que você é o legítimo proprietário do espaço em questão.
-* **Entre em contato com o suporte:** Explique a situação detalhadamente e envie os documentos comprobatórios.
-* **Acompanhe o processo:** O suporte técnico irá analisar sua solicitação e realizar as alterações necessárias.
+- **Reúna a documentação:** Junte todos os documentos que comprovem que você é o legítimo proprietário do espaço em questão.
+- **Entre em contato com o suporte:** Explique a situação detalhadamente e envie os documentos comprobatórios.
+- **Acompanhe o processo:** O suporte técnico irá analisar sua solicitação e realizar as alterações necessárias.
 
-**Em casos de múltiplos representantes legais:** 
+**Em casos de múltiplos representantes legais:**
 
-* **Adicione administradores:** Para que outros representantes possam gerenciar o espaço, faça a inclusão de novos administradores.
+- **Adicione administradores:** Para que outros representantes possam gerenciar o espaço, faça a inclusão de novos administradores.
 
 > **Importante:** Sem a documentação comprobatória, não será possível alterar a propriedade do espaço.
 

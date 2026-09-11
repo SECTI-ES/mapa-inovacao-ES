@@ -1,18 +1,18 @@
 # Por que o Mapa da Inovação solicita o seu CPF?
 
-- acesso
-- cadastro
-- dados pessoais
+- Acesso
+- Cadastro
+- Dados pessoais
 - CPF
 
-O CPF é o seu documento de identidade nacional e garante a segurança e a transparência em todas as ações realizadas por você na plataforma. 
+O CPF é o seu documento de identidade nacional e garante a segurança e a transparência em todas as ações realizadas por você na plataforma.
 
 &nbsp;
 
 #### **Ao solicitar o CPF, estamos assegurando que:**
 
-* **Seu cadastro seja único:** Cada pessoa tem direito a apenas um CPF, evitando duplicidades e fraudes.
-* **Seus dados sejam protegidos:** O CPF é utilizado para confirmar sua identidade e evitar que outras pessoas se cadastrem em seu nome.
+- **Seu cadastro seja único:** Cada pessoa tem direito a apenas um CPF, evitando duplicidades e fraudes.
+- **Seus dados sejam protegidos:** O CPF é utilizado para confirmar sua identidade e evitar que outras pessoas se cadastrem em seu nome.
 
 &nbsp;
 

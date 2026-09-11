@@ -1,8 +1,8 @@
 # Posso criar um espaço para outra pessoa?
 
-- espaço
-- criação
-- terceiros
+- Espaço
+- Criação
+- Terceiros
 
 **A criação de espaços é individual.**
 

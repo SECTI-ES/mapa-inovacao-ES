@@ -1,21 +1,23 @@
-<?php 
+<?php
 /**
  * @var MapasCulturais\App $app
  * @var MapasCulturais\Themes\BaseV2\Theme $this
  */
 
 $this->import('
-    home-developers 
-    home-entities 
+    home-developers
+    home-entities
     home-feature
-    home-header 
-    home-map 
-    home-opportunities 
+    home-header
+    home-map
+    home-opportunities
     home-register
 ');
 ?>
 <home-header></home-header>
-<?php 
+
+<!-- Modificação Mapa da Inovação -->
+<?php
     // if(true){    // Mostra barra de treinamento sempre
     if(getenv('APPMODE_TRAINING') === 'true'){
         echo '

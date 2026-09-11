@@ -1,7 +1,5 @@
 <?php
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'entity';
@@ -33,6 +31,8 @@ $this->import('
     mc-tabs
     mc-tab
 ');
+
+// Correção dos breadcrumbs do Mapa da Inovação
 
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');

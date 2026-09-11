@@ -1,7 +1,5 @@
 <?php
 
- // Alteração: Botão "Voltar" era desnecessário por conta dos Breadcrumb e apresentava erro nos props.
-
 use MapasCulturais\App;
 use MapasCulturais\i;
 
@@ -17,6 +15,8 @@ $this->breadcrumb = [
 $message = $app->config['module.FAQ']['support-message'] ?? '';
 
 ?>
+
+<!-- Alteração do Mapa da Inovação: Botão "Voltar" era desnecessário por conta dos Breadcrumb e apresentava erro nos props. -->
 <div class="faq__content">
     <aside class="faq__aside">
         <div class="faq__btn-aside">

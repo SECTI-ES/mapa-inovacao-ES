@@ -68,7 +68,7 @@ $this->import('
             </div>
             <div v-if="linguagens" class="entity-card__content--terms-linguagem">
                 <label class="linguagem__title">
-                    <?php i::_e('tipos:') ?> ({{event.terms.linguagem.length}}):
+                    <?php i::_e('tipos:') ?> ({{event.terms.linguagem.length}}): <!-- Correção Mapa da Inovação -->
                 </label>
                 <p :class="['terms', 'event__color']"> {{linguagens}} </p>
             </div>

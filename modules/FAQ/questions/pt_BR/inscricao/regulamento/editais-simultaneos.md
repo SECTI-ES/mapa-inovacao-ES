@@ -1,9 +1,9 @@
 # Consigo participar de outras Oportunidades simultaneamente?
 
-- oportunidade
-- oportunidades
-- simultâneos
-- regulamento
+- Oportunidade
+- Oportunidades
+- Simultâneos
+- Regulamento
 
 Tecnicamente, é possível participar de mais de uma Oportunidade simultaneamente. Contudo, algumas Oportunidades podem não permitir isso.
 

@@ -51,6 +51,7 @@ app.component("mc-icon", {
             }
         },
 
+        // Métodos 'src', 'own' e 'alt': alterações para o Mapa da Inovação
         src() {
             const icons = $MAPAS.config.iconsUrl;
 

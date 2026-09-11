@@ -1,7 +1,4 @@
 <?php
-
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->import('
@@ -15,13 +12,12 @@ $this->import('
     opportunity-table
 ');
 
+// Correção Mapa da Inovação:  Breadcrumbs
 $this->breadcrumb = [
     ['label'=> i::__('Inicio'), 'url' => $app->createUrl('site', 'index')],
     ['label'=> i::__('Oportunidades'), 'url' => $app->createUrl('search', 'opportunities')],
 ];
 ?>
-<!-- Mapa Inovação: correção dos Breadcrumbs -->
-
 <search page-title="<?= htmlspecialchars($this->text('title', i::__('Oportunidades'))) ?>" entity-type="opportunity" :initial-pseudo-query="{type:[],'term:area':[]}">
     <template v-if="global.auth.isLoggedIn" #create-button>
         <create-opportunity #default="{modal}">

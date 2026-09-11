@@ -4,8 +4,6 @@
  * @var MapasCulturais\Themes\BaseV2\Theme $this
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'entity';
@@ -26,6 +24,7 @@ $this->import('
 
 $this->addOpportunityPhasesToJs($entity);
 
+// Correção Mapa da Inovação:  Breadcrumbs
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');

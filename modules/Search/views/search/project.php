@@ -1,7 +1,5 @@
 <?php
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->import('
@@ -15,6 +13,7 @@ $this->import('
     project-table
 ');
 
+// Correção Mapa da Inovação:  Breadcrumbs
 $this->breadcrumb = [
     ['label' => i::__('Inicio'), 'url' => $app->createUrl('site', 'index')],
     ['label' => i::__('Projetos'), 'url' => $app->createUrl('search', 'projects')],

@@ -4,8 +4,6 @@
  * @var MapasCulturais\Themes\BaseV2\Theme $this
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'registrations';
@@ -39,6 +37,7 @@ if ($showWorkplanForm) {
     $this->import('registration-workplan-form');
 }
 
+// Correção Mapa da Inovação:  Breadcrumbs
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -107,7 +106,7 @@ if (!empty($_SESSION[$back_session_key])) {
     $back_url = $user_evaluations_url;
 }
 
-// Mapa Inovação: correção dos Breadcrumbs
+// Mapa da Inovação: correção dos Breadcrumbs
 $breadcrumb = [
     ['label' => $label_init, 'url' => $url_init],
     ['label' => $label, 'url' => $url],

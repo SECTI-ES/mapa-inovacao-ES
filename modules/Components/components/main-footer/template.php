@@ -43,27 +43,27 @@ $config = $app->config['social-media'];
                 </li>
                 <li v-if="global.enabledEntities.opportunities">
                     <a href="<?= $app->createUrl('search', 'opportunities') ?>">
-                        <mc-icon name="opportunity"></mc-icon> <?= $this->text('main-footer', i::__('Editais e oportunidade')); ?>
+                        <mc-icon name="opportunity"></mc-icon> <?= $this->text('main-footer', i::__('Editais e oportunidade')); ?> <!-- Correção Mapa da Inovação -->
                     </a>
                 </li>
                 <li v-if="global.enabledEntities.events">
                     <a href="<?= $app->createUrl('search', 'events') ?>">
-                        <mc-icon name="event"></mc-icon> <?php i::_e('Eventos'); ?>
+                        <mc-icon name="event"></mc-icon> <?php i::_e('Eventos'); ?> <!-- Correção Mapa da Inovação -->
                     </a>
                 </li>
                 <li v-if="global.enabledEntities.agents">
                     <a href="<?= $app->createUrl('search', 'agents') ?>">
-                        <mc-icon name="agent"></mc-icon> <?php i::_e('Agentes'); ?>
+                        <mc-icon name="agent"></mc-icon> <?php i::_e('Agentes'); ?> <!-- Correção Mapa da Inovação -->
                     </a>
                 </li>
                 <li v-if="global.enabledEntities.spaces">
                     <a href="<?= $app->createUrl('search', 'spaces') ?>">
-                        <mc-icon name="space"></mc-icon> <?php i::_e('Espaços'); ?>
+                        <mc-icon name="space"></mc-icon> <?php i::_e('Espaços'); ?> <!-- Correção Mapa da Inovação -->
                     </a>
                 </li>
                 <li v-if="global.enabledEntities.projects">
                     <a href="<?= $app->createUrl('search', 'projects') ?>">
-                        <mc-icon name="project"></mc-icon> <?php i::_e('Projetos'); ?>
+                        <mc-icon name="project"></mc-icon> <?php i::_e('Projetos'); ?> <!-- Correção Mapa da Inovação -->
                     </a>
                 </li>
             </ul>
@@ -115,6 +115,7 @@ $config = $app->config['social-media'];
         </div>
         <?php $this->applyTemplateHook("main-footer-links", "after")?>
 
+        <!-- Adição do Mapa da Inovação -->
         <?php $this->applyTemplateHook("main-footer-logo", "before")?>
         <div class="main-footer__support">
             <?php $this->part('footer-support-message') ?>
@@ -136,7 +137,7 @@ $config = $app->config['social-media'];
         <div class="main-footer__reg-content">
             <?php $this->part('main-footer/developed-by') ?>
 
-            <a class="link" href="https://github.com/mapasculturais">
+            <a class="link" href="https://github.com/SECTI-ES/mapa-inovacao-ES"> <!-- Correção Mapa da Inovação -->
                 <?php i::_e("Conheça o repositório") ?>
                 <mc-icon name="github"></mc-icon>
             </a>

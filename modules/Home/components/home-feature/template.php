@@ -7,7 +7,7 @@
 use MapasCulturais\i;
 
 $this->import('
-	entity-card 
+	entity-card
     mc-loading
     mc-tab
 	mc-tabs
@@ -20,7 +20,7 @@ $this->import('
             <label><?= $this->text('title', i::__('Em destaque')) ?></label>
         </div>
         <div class="home-feature__header description">
-            <label><?= $this->text('description', i::__('Confira os últimos destaques de cada uma das entidades.')) ?></label>
+            <label><?= $this->text('description', i::__('Confira os últimos destaques de cada uma das entidades.')) ?></label> <!-- Correção Mapa da Inovação -->
         </div>
     </div>
     <div class="home-feature__content">
@@ -96,6 +96,7 @@ $this->import('
                         </template>
                     </carousel>
                 </mc-tab>
+                <!-- Modificação Mapa da Inovação -->
                 <mc-tab v-if="opportunities.length > 0" label="<?= i::esc_attr__('Oportunidades') ?>" slug="opportunities">
                     <carousel :settings="settings" :breakpoints="breakpoints">
                         <slide v-for="entity in opportunities" :key="entity.__objectId">

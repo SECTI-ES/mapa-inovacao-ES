@@ -643,7 +643,7 @@ class Module extends \MapasCulturais\Module{
             if ($is_valuer) {
                 $breadcrumb = [
                     ['label'=> i::__('Painel'), 'url' => $app->createUrl('panel', 'index')],
-                    ['label'=> i::__('Minhas avaliações'), 'url' => $app->createUrl('panel', 'evaluations')], // Linha do Mapa Inovação: correção dos Breadcrumbs
+                    ['label'=> i::__('Minhas avaliações'), 'url' => $app->createUrl('panel', 'evaluations')], // Correção do Mapa Inovação: Breadcrumbs
                     ['label'=> $first_phase->name, 'url' => $app->createUrl('opportunity', 'single', [$first_phase->id])]
                 ];
             } else {

@@ -8,12 +8,13 @@ clean_docker_data(){
 
     rm -rf assets db-data logs private-files public-files
 
-    cd $ROOT_DIRETORY/dev
+    cd $LOCAL_DIRETORY
 }
 
 clear
 ROOT_DIRETORY="$(pwd)"
-cd $ROOT_DIRETORY/docker/local
+LOCAL_DIRETORY="$(pwd)/docker/local"
+cd $LOCAL_DIRETORY
 
 CONTAINER_MAPA=mapas-ES
 CONTAINER_REDIS=redis-mapas

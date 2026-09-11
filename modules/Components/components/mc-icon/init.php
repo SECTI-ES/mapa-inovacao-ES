@@ -31,6 +31,7 @@ $iconset = [
     'whatsapp' => 'akar-icons:whatsapp-fill',
     'vimeo' => 'brandico:vimeo',
     'youtube' => 'akar-icons:youtube-fill',
+    'fediverso' => 'ri-fediverse-line',
 
 
     // IMPORTANTE: manter ordem alfabética
@@ -96,6 +97,8 @@ $iconset = [
     'link' => 'cil:link-alt',
     'list' => 'ci:list-ul',
     'loading' => 'eos-icons:three-dots-loading',
+    'lock-open' => 'flowbite:lock-solid',
+    'lock-closed' => 'flowbite:lock-open-solid',
     'login' => 'icon-park-outline:login',
     'logout' => 'ri:logout-box-line',
     'magnifier' => 'simple-line-icons:magnifier',
@@ -141,4 +144,4 @@ $iconset = [
 $app->applyHook('component(mc-icon).iconset', [&$iconset]);
 
 $this->jsObject['config']['iconset'] = $iconset;
-$this->jsObject['config']['iconsUrl'] = $app->config['iconsUrl'];
+$this->jsObject['config']['iconsUrl'] = $app->config['iconsUrl']; // Linha do Mapa da Inovação

@@ -4,8 +4,6 @@
  * @var \MapasCulturais\App $app
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'registrations';
@@ -29,6 +27,7 @@ $this->import('
     registration-evaluation-tab
 ');
 
+// Correção Mapa da Inovação:  Breadcrumbs
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -48,8 +47,6 @@ $this->breadcrumb = [
     ['label' => $entity->opportunity->name, 'url' => $app->createUrl('opportunity', 'single', [$entity->opportunity->id])],
     ['label' => i::__('Inscrição')]
 ];
-
-// Mapa Inovação: correção dos Breadcrumbs
 
 $entity = $entity->firstPhase;
 
