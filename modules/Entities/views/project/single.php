@@ -1,8 +1,5 @@
 <?php
 
-// ISSUE: links dos Breadcrumbs
-// ISSUE 2: Ids dos Subprojetos - Linha 61
-
 use MapasCulturais\i;
 
 $this->layout = 'entity';
@@ -33,6 +30,8 @@ $this->import('
     mc-tabs
 ');
 
+// Correção dos breadcrumbs do Mapa da Inovação
+
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -57,6 +56,7 @@ foreach($entity->children as $children) {
     $children_id[] = $children->id;
 }
 
+// Correção do Mapa da Inovação
 if($children_id ){
     $children_id  = implode(",", $children_id );
 } else $children_id = "";
@@ -121,7 +121,7 @@ if($children_id ){
             </div>
         </mc-tab>
 
-        <mc-tab label="<?= i::_e('Subprojetos') ?>" slug="subprojects">
+        <mc-tab icon="list" label="<?= i::_e('Subprojetos') ?>" slug="subprojects">
             <div class="single-project__subproject">
                 <mc-container>
                     <main class="grid-12">
@@ -144,6 +144,59 @@ if($children_id ){
                         <div v-if="!entity.children" class="single-project__not-found">
                             <p class="semibold"><?= i::__('Nenhum subprojeto vinculado.') ?></p>
                         </div>
+                    </main>
+                    <aside>
+                        <div class="grid-12">
+                            <entity-social-media :entity="entity" classes="col-12"></entity-social-media>
+                            <entity-seals :entity="entity" :editable="entity.currentUserPermissions?.createSealRelation" classes="col-12" title="<?php i::esc_attr_e('Verificações'); ?>"></entity-seals>
+                            <entity-related-agents :entity="entity" classes="col-12" title="<?php i::esc_attr_e('Agentes Relacionados'); ?>"></entity-related-agents>
+                            <entity-terms :entity="entity" hide-required classes="col-12" taxonomy="tag" title="<?php i::esc_attr_e('Tags') ?>"></entity-terms>
+                            <mc-share-links classes="col-12" title="<?php i::esc_attr_e('Compartilhar'); ?>" text="<?php i::esc_attr_e('Veja este link:'); ?>"></mc-share-links>
+                            <entity-owner classes="col-12" title="<?php i::esc_attr_e('Publicado por'); ?>" :entity="entity"></entity-owner>
+                            <entity-admins :entity="entity" classes="col-12"></entity-admins>
+                        </div>
+                    </aside>
+                </mc-container>
+            </div>
+        </mc-tab>
+
+        <mc-tab icon="event" label="<?= i::_e('Eventos') ?>" slug="events">
+            <div class="single-project__events">
+                <mc-container>
+                    <main class="grid-12">
+                        <mc-entities type="event" select="name,shortDescription,files.avatar,seals,terms,occurrences,project" :query="{project: `EQ(${entity.id})`, status: 'EQ(1)'}" :limit="20" watch-query>
+                            <template #default="{entities}">
+                                <div v-if="entities.length > 0" class="col-12">
+                                    <entity-card :entity="event" v-for="event in entities" :key="event.__objectId" class="col-12">
+                                        <template #avatar>
+                                            <mc-avatar :entity="event" size="medium"></mc-avatar>
+                                        </template>
+                                        <template #type>
+                                            <span>
+                                                <?= i::__('EVENTO') ?>
+                                                <span class="event__status">{{event.status == 1 ? '<?= i::__('Ativo') ?>' : '<?= i::__('Inativo') ?>'}}</span>
+                                            </span>
+                                        </template>
+                                        <template #extra-content>
+                                            <div v-if="event.occurrences && event.occurrences.length > 0" class="event__occurrences">
+                                                <h5><?= i::__('Ocorrências:') ?></h5>
+                                                <div v-for="occurrence in event.occurrences" :key="occurrence.id" class="occurrence">
+                                                    <strong>{{occurrence.space?.name || '<?= i::__('Local não informado') ?>'}}</strong>
+                                                    <div class="occurrence__datetime">
+                                                        <span v-if="occurrence.startsAt">{{occurrence.startsAt | formatDate}}</span>
+                                                        <span v-if="occurrence.startsAt && occurrence.endsAt"> - </span>
+                                                        <span v-if="occurrence.endsAt">{{occurrence.endsAt | formatDate}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </entity-card>
+                                </div>
+                                <div v-else class="single-project__not-found col-12">
+                                    <p class="semibold"><?= i::__('Nenhum evento vinculado a este projeto.') ?></p>
+                                </div>
+                            </template>
+                        </mc-entities>
                     </main>
                     <aside>
                         <div class="grid-12">

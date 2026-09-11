@@ -1,6 +1,8 @@
 <?php
 use MapasCulturais\i;
 
+// Correção do Mapa da Inovação: agentes -> pessoas
+
 return [
     'title agent-1' => i::__('Edição da pessoa física'),
     'title agent-2' => i::__('Edição da pessoa jurídica'),

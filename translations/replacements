@@ -6,8 +6,11 @@ Dados do Agente Coletivo >>> Dados da Pessoa Jurídica
 (agentes coletivos com CNPJ) >>> (Pessoa Jurídica com CNPJ)
 Agente coletivo (pessoa jurídica) >>> Pessoa Jurídica
 Agente Coletivo >>> Pessoa Jurídica
+Agente coletivo >>> Pessoa Jurídica
 as linguagens >>> os tipos
 Linguagens >>> Tipo
 Agente individual (pessoa física) >>> Pessoa Física
 Agente coletivo sem CNPJ >>> Pessoa Jurídica com CNPJ
 Coletivo >>> Pessoa Jurídica
+Agente Cultural >>> Agente de Inovação
+Agente cultural >>> Agente de Inovação

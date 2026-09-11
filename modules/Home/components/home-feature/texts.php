@@ -7,5 +7,5 @@ return [
     'space' => i::__('Espaço'),
     'event' => i::__('Evento'),
     'project' => i::__('Projeto'),
-    'opportunity' => i::__('Oportunidade'),
+    'opportunity' => i::__('Oportunidade'), // Correção do Mapa da Inovação
 ];

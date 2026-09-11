@@ -39,15 +39,16 @@ $this->import('
         <h4 v-if="owner.site"> <span class="bold"><?= i::__("Site:") ?></span> {{owner.site}} </h4>
         <h4 v-if="owner.facebook"> <span class="bold"><?= i::__("Facebook:") ?></span> {{owner.facebook}} </h4>
         <h4 v-if="owner.twitter"> <span class="bold"><?= i::__("Twitter:") ?></span> {{owner.twitter}} </h4>
+        <h4 v-if="owner.fediverso"> <span class="bold"><?= i::__("Fediverso:") ?></span> {{owner.fediverso}} </h4>
     </div>
 
     <div v-if="opportunity.useAgentRelationColetivo && opportunity.useAgentRelationColetivo !== 'dontUse'" class="mc-summary-agent-info__section">
         <h3><?= i::__("Dados do coletivo") ?></h3>
 
         <div>
+            <!-- Correção Mapa da Inovação -->
             <h4 v-if="colective" style="padding-bottom: 6px;">{{colective?.name}}</h4>
             <img v-if="getAvatarRelatedEntity('coletivo')" :src="getAvatarRelatedEntity('coletivo')" height='200vh'/>
-            <!-- <mc-icon v-if="!getAvatarRelatedEntity('coletivo')" name="agent"></mc-icon> -->
             <span v-if="!colective && (opportunity.useAgentRelationColetivo)"><?= i::__("Instituição não informada") ?></span>
         </div>
 

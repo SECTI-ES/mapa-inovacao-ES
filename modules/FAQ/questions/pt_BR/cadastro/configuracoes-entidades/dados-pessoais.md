@@ -1,15 +1,15 @@
 # O que são Dados Pessoais?
 
-- acesso
-- cadastro
-- dados pessoais
+- Acesso
+- Cadastro
+- Dados Pessoais
 
-Dados pessoais são todos os dados que te individualizam e te diferenciam de outras pessoas no *Mapa da Inovação*.
+Dados pessoais são todos os dados que te individualizam e te diferenciam de outras pessoas no _Mapa da Inovação_.
 
 &nbsp;
 
 #### **É importante lembrar que:**
 
-* **Seus dados são seus:** Você tem o direito de saber quais dados são coletados sobre você e como eles são utilizados.
-* **Existem leis que protegem seus dados:** A LGPD estabelece regras para a coleta, armazenamento e tratamento de dados pessoais.
-* **Você tem direitos:** Você tem o direito de acessar, corrigir, excluir e solicitar a portabilidade dos seus dados pessoais.
+- **Seus dados são seus:** Você tem o direito de saber quais dados são coletados sobre você e como eles são utilizados.
+- **Existem leis que protegem seus dados:** A LGPD estabelece regras para a coleta, armazenamento e tratamento de dados pessoais.
+- **Você tem direitos:** Você tem o direito de acessar, corrigir, excluir e solicitar a portabilidade dos seus dados pessoais.

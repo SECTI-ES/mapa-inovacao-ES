@@ -69,9 +69,9 @@ $this->import('
                 <span class="create-occurrence__section--title"> <?= i::_e('Qual a frequência do evento?') ?> </span>
 
                 <div class="create-occurrence__section--fields">
-                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="once" /> <?= i::_e('Uma vez') ?> </label>
-                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="weekly" /> <?= i::_e('Semanal') ?> </label>
-                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="daily" /> <?= i::_e('Todos os dias') ?> </label>
+                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="once" /> <?= i::_e('Uma vez') ?> </label> <!-- Correção Mapa da Inovação -->
+                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="weekly" /> <?= i::_e('Semanal') ?> </label> <!-- Correção Mapa da Inovação -->
+                    <label class="create-occurrence__section--fields-field"> <input v-model="frequency" type="radio" name="frequency" value="daily" /> <?= i::_e('Todos os dias') ?> </label> <!-- Correção Mapa da Inovação -->
                 </div>
             </div>
 

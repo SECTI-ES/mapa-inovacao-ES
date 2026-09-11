@@ -5,8 +5,6 @@
  * @var MapasCulturais\Entities\Opportunity $entity
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'entity';
@@ -44,6 +42,7 @@ $this->import('
     v1-embed-tool
 ');
 
+// Correção Mapa da Inovação:  Breadcrumbs
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -63,7 +62,6 @@ $this->breadcrumb = [
   ['label' => $entity->name, 'url' => $app->createUrl('opportunity', 'single', [$entity->id])],
 ];
 ?>
-<!-- Mapa Inovação: correção dos Breadcrumbs -->
 
 <div class="main-app single single-opportunity">
   <mc-breadcrumb></mc-breadcrumb>

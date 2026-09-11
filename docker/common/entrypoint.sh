@@ -95,7 +95,7 @@ echo "⏰ [Mapas] Inicializando CRONs..."
 
 sudo -E -u www-data /jobs-cron.sh > /proc/1/fd/1 2>&1 &
 sudo -E -u www-data /recreate-pending-pcache-cron.sh > /proc/1/fd/1 2>&1 &
-sudo -E -u www-data /recreate-pending-pcache-cron.sh > /proc/1/fd/1 2>&1 &
+sudo -E -u www-data /cleanup-orphan-assets-cron.sh > /proc/1/fd/1 2>&1 &
 
 touch /mapas-ready
 

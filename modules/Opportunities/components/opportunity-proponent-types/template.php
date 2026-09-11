@@ -13,7 +13,7 @@ use MapasCulturais\i;
     <h6><?= i::__("Selecione um ou mais tipos de proponente que poderá participar do edital")?></h6>
     <div>
         <div class="opportunity-proponent-types__fields">
-            <!-- rm duplicated options in description.optionsOrder -->
+            <!-- Correção Mapa da Inovação: rm duplicated options in description.optionsOrder -->
             <div class="opportunity-proponent-types__field" v-for="optionValue in new Set(description.optionsOrder)" :key="optionValue">
                 <label>
                     <input
@@ -25,7 +25,7 @@ use MapasCulturais\i;
                     {{ description.options[optionValue] }}
                 </label>
 
-                <!-- rm agente coletivo -->
+                <!-- Correção Mapa da Inovação: rm agente coletivo -->
                 <!-- <div class="opportunity-proponent-types__field field__collective" v-if="showColetivoBinding && optionValue === '<?= i::__('Coletivo') ?>'">
                     <label>
                         <input
@@ -34,6 +34,14 @@ use MapasCulturais\i;
                             @change="toggleAgentRelation($event, 'Coletivo')"
                         >
                         <?= i::__("Habilitar a vinculação de agente coletivo")?>
+                    </label>
+                    <label v-if="proponentAgentRelation['Coletivo']">
+                        <input
+                            type="checkbox"
+                            :checked="proponentAgentRelationAvatar['Coletivo']"
+                            @change="toggleAgentRelationAvatar($event, 'Coletivo')"
+                        >
+                        <?= i::__("Habilitar solicitação de imagem de perfil")?>
                     </label>
                 </div> -->
 
@@ -44,7 +52,7 @@ use MapasCulturais\i;
                             :checked="proponentAgentRelation['Pessoa Jurídica']"
                             @change="toggleAgentRelation($event, 'Pessoa Jurídica')"
                         >
-                        <!-- Corrige tipo do agente -->
+                        <!-- Correção Mapa da Inovação:  tipo do agente -->
                         <?= i::__("Habilitar a vinculação de pessoa jurídica")?>
                     </label>
                     <label v-if="proponentAgentRelation['Pessoa Jurídica']">

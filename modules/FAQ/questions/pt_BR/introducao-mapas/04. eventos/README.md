@@ -1,3 +1,3 @@
 # Eventos
 
-Aqui você encontra informações sobre os Eventos no *Mapa da Inovação*.
+Aqui você encontra informações sobre os Eventos no Mapa da Inovação.

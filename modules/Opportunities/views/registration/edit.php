@@ -5,8 +5,6 @@
  * @var \MapasCulturais\Entities\Registration $entity
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->layout = 'registrations';
@@ -24,6 +22,7 @@ $this->import('
 
 $this->useOpportunityAPI();
 
+// Correção Mapa da Inovação:  Breadcrumbs
 $opportunity = $entity->opportunity;
 if($this->isRequestedEntityMine()){
     $label = i::__('Minhas oportunidades');

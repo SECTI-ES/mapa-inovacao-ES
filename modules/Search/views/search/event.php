@@ -4,8 +4,6 @@
  * @var MapasCulturais\Themes\BaseV2\Theme $this
  */
 
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 
 $this->import('
@@ -19,6 +17,7 @@ $this->import('
     search-map-event
 ');
 
+// Correção Mapa da Inovação:  Breadcrumbs
 $this->breadcrumb = [
     ['label' => i::__('Inicio'), 'url' => $app->createUrl('site', 'index')],
     ['label' => i::__('Eventos'), 'url' => $app->createUrl('search', 'events')],

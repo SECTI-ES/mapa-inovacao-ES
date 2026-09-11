@@ -1,7 +1,4 @@
 <?php
-
-// ISSUE: links dos Breadcrumbs
-
 use MapasCulturais\i;
 $this->layout = 'entity';
 
@@ -32,6 +29,8 @@ $this->import('
     opportunity-list
 ');
 
+// Correção dos breadcrumbs do Mapa da Inovação
+
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
@@ -51,7 +50,6 @@ $this->breadcrumb = [
     ['label' => $entity->name, 'url' => $app->createUrl('space', 'single', [$entity->id])],
 ];
 ?>
-<!-- Mapa Inovação: correção dos Breadcrumbs -->
 
 <div class="main-app">
     <mc-breadcrumb></mc-breadcrumb>

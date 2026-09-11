@@ -32,7 +32,8 @@ $this->import('
     entity-file
 ');
 
-// correção dos breadcrumbs do Mapa da Inovação
+// Correção dos breadcrumbs do Mapa da Inovação
+
 if($this->isRequestedEntityMine()){
     $label_init = i::__('Painel');
     $url_init = $app->createUrl('panel', 'index');
