@@ -66,6 +66,8 @@ services:
 
       - ./em-breve:/var/www/html/em-breve
 
+      - ./docker/production/fpm.conf:/usr/local/etc/php-fpm.d/www.conf
+
     environment:
       - REDIS_CACHE=redis
       - SESSIONS_SAVE_PATH=tcp://sessions:6379

@@ -1,4 +1,4 @@
-FROM hacklab/mapasculturais:7.8.8
+FROM hacklab/mapasculturais:7.8.20
 
 COPY themes /var/www/src/themes
 COPY plugins /var/www/src/plugins
@@ -16,6 +16,4 @@ COPY em-breve /var/www/html/em-breve
 
 COPY docker/common/entrypoint.sh /entrypoint.sh
 
-# WORKDIR /var/www/src
-# RUN pnpm install --recursive && pnpm run build
-# WORKDIR /var/www
+# COPY docker/production/fpm.conf /usr/local/etc/php-fpm.d/www.conf
